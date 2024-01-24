@@ -1,0 +1,8 @@
+section  
+    #popular 
+    #recent
+        -@recent.each do |title|
+            a href="project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title).first}"
+                p #{title}
+
+footer

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+html lang="en"
+  head
+    meta charset="UTF-8"/
+    meta name="viewport" content="width=device-width, initial-scale=1.0"/
+    link rel="stylesheet" href="/css/style.css"/
+    title dollarr.com
+  body
+    nav
+      a href="/" 
+        h2 class="nav_text" Home
+      -if session[:tag] != "guest"
+        a href="/account/#{session[:id]}" 
+          h2 class="nav_text" My Account 
+        a href="/create" 
+          h2 class="nav_text" Create Listing 
+      -if session[:tag] == "admin"
+        a href="/admin" 
+          h2 class="nav_text" Manage Site
+    header
+      h1 class="header_text" dollarr.
+
+    == yield

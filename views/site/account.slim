@@ -1,0 +1,7 @@
+section
+    h2 Username: #{session[:username]}
+    #My_projects 
+        h2 My projects 
+        -@result.each do |title|
+            a href="project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title).first}"
+                h2 #{title}

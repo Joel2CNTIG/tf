@@ -1,0 +1,15 @@
+form action="/post-create" method="post"
+    input type="text" name="title" placeholder="Title"
+    input type="text" name="description" placeholder="Description"
+    select name="keyword"
+        -@result.each do |word|
+            option value="#{word}" #{word}
+    select name="keyword2"
+        -@result.each do |word|
+            -unless word == params[:keyword]
+                option value="#{word}" #{word}
+    select name="keyword3"
+        -@result.each do |word|
+            -unless word == params[:keyword] || word == params[:keyword2]
+                option value="#{word}" #{word}
+    input type="submit" value="Create!"
