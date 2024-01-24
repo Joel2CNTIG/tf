@@ -6,6 +6,20 @@ require 'bcrypt'
 
 enable :sessions 
 
+before do
+  restricted_routes = ['/account/:id', '/create', '/admin']
+  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest']
+  if session[:tag] == "guest" && restricted_routes.include?(request.path_info)
+    redirect('/home')
+  end
+  if session[:tag] != "admin" && request.path_info == '/admin'
+    redirect('/home')
+  end
+  if session[:tag] == nil && !login_routes.include?(request.path_info)
+    redirect('/')
+  end
+end
+
 def connect_db(path)
   return SQLite3::Database.new(path)
 end
@@ -90,3 +104,39 @@ get('/create') do
   @result = db.execute("SELECT word FROM keywords")
   slim(:"site/create")
 end
+
+post('/post-create') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  id = session[:id]
+  title = params[:title]
+  description = params[:description]
+  keywords = []
+  unless params[:keyword1] == nil
+    keywords << params[:keyword1]
+  end
+  unless params[:keyword2] == nil
+    keywords << params[:keyword2]
+  end
+  unless params[:keyword3] == nil
+    keywords << params[:keyword3]
+  end
+end
+
+get('/project/:id') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  unless session[:tag] == "guest"
+    db.execute("UPDATE projects SET visits = visits + 1 WHERE id = ?", params[:id])
+  end
+  @username = db.execute("SELECT username FROM user WHERE id = projects.user_id")
+  @title = db.execute("SELECT title FROM projects WHERE id = ?", params[:id])
+  @description = db.execute("SELECT description FROM projects WHERE id = ?", params[:id])
+  keyword_ids = db.execute("SELECT keyword_id FROM project_keyword_relationship WHERE project_id = ?", params[:id])
+  @keywords = []
+  keyword_id.each do |keyid|
+    @keywords << db.execute("SELECT word FROM keywords WHERE id = ?", keyid).first
+  end
+  slim(:"site/project")
+end
+
