@@ -7,12 +7,12 @@ require 'bcrypt'
 enable :sessions 
 
 before do
-  restricted_routes = ['/account/:id', '/create', '/admin']
+  restricted_routes = ['/account/:id', '/create']
   login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest']
   if session[:tag] == "guest" && restricted_routes.include?(request.path_info)
     redirect('/home')
   end
-  if session[:tag] != "admin" && request.path_info == '/admin'
+  if session[:tag] != "admin" && request.path_info == '/admin/*' 
     redirect('/home')
   end
   if session[:tag] == nil && !login_routes.include?(request.path_info)
@@ -86,7 +86,8 @@ get('/home') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
   @recent = @db.execute("SELECT title FROM projects ORDER BY id DESC LIMIT 5")
-  p @result
+  @popular = @db.execute("SELECT title FROM projects ORDER By visits DESC LIMIT 5")
+  p @recent
   slim(:"site/home")
 end
 
@@ -95,6 +96,7 @@ get('/account/:id') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
   @result = @db.execute("SELECT title FROM projects WHERE user_id = ?", @id)
+  p @result
   slim(:"site/account")
 end
 
@@ -112,15 +114,26 @@ post('/post-create') do
   title = params[:title]
   description = params[:description]
   keywords = []
-  unless params[:keyword1] == nil
-    keywords << params[:keyword1]
+  p params[:keyword]
+  p params[:keyword2]
+  p params[:keyword3]
+  unless params[:keyword] == nil || params[:keyword] == ""
+    keywords << params[:keyword]
   end
-  unless params[:keyword2] == nil
+  unless params[:keyword2] == nil || params[:keyword2] == ""
     keywords << params[:keyword2]
   end
-  unless params[:keyword3] == nil
+  unless params[:keyword3] == nil || params[:keyword3] == ""
     keywords << params[:keyword3]
   end
+  p keywords
+  db.execute("INSERT INTO projects (user_id, title, description, visits) VALUES (?,?,?,?)", id, title, description, 0)
+  proj_id = db.execute("SELECT id FROM projects WHERE title = ?", title).first["id"]
+  keywords.each do |word|
+    key_id = db.execute("SELECT id FROM keywords WHERE word = ?", word).first["id"]
+    db.execute("INSERT INTO project_keyword_relationship (project_id, keyword_id) VALUES (?,?)", proj_id, key_id)
+  end
+  redirect('/home')
 end
 
 get('/project/:id') do
@@ -129,14 +142,43 @@ get('/project/:id') do
   unless session[:tag] == "guest"
     db.execute("UPDATE projects SET visits = visits + 1 WHERE id = ?", params[:id])
   end
-  @username = db.execute("SELECT username FROM user WHERE id = projects.user_id")
-  @title = db.execute("SELECT title FROM projects WHERE id = ?", params[:id])
-  @description = db.execute("SELECT description FROM projects WHERE id = ?", params[:id])
+  user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
+  p user_id
+  @username = db.execute("SELECT username FROM user WHERE id = ?", user_id).first["username"]
+  @title = db.execute("SELECT title FROM projects WHERE id = ?", params[:id]).first["title"]
+  @description = db.execute("SELECT description FROM projects WHERE id = ?", params[:id]).first["description"]
   keyword_ids = db.execute("SELECT keyword_id FROM project_keyword_relationship WHERE project_id = ?", params[:id])
+  p keyword_ids
   @keywords = []
-  keyword_id.each do |keyid|
-    @keywords << db.execute("SELECT word FROM keywords WHERE id = ?", keyid).first
+  keyword_ids.each do |keyid|
+    @keywords << db.execute("SELECT word FROM keywords WHERE id = ?", keyid["keyword_id"]).first["word"]
   end
   slim(:"site/project")
 end
 
+before('/project/:id/edit') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  id_list = db.execute('SELECT id FROM projects WHERE user_id = ?', session[:id])
+  id_list.each do |id|
+    if id["id"] == params[:id]
+      redirect('/home')
+    end
+  end
+end
+
+get('/project/:id/edit') do
+  
+end
+
+get('/admin/create_keyword') do
+  slim(:"admin/create_keyword")
+end
+
+post('/post-create_keyword') do
+  keyword = params[:keyword]
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  db.execute("INSERT INTO keywords (word) VALUES (?)",(keyword))
+  redirect('/admin')
+end

@@ -1,8 +1,21 @@
 section  
     #popular 
+        h2 Popular Listings
+        -@popular.each do |title|
+            -proj_id = @db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]
+            ul 
+                a href="project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}"
+                    -user_id = @db.execute("SELECT user_id FROM projects WHERE id = ?", proj_id).first["user_id"]
+                    -username = @db.execute("SELECT username FROM user WHERE id = ?", user_id).first["username"]
+                    li #{title["title"]} - #{username}
     #recent
+        h2 Recent Listings
         -@recent.each do |title|
-            a href="project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title).first}"
-                p #{title}
+            -proj_id = @db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]
+            ul
+                a href="project/#{proj_id}"
+                    -user_id = @db.execute("SELECT user_id FROM projects WHERE id = ?", proj_id).first["user_id"]
+                    -username = @db.execute("SELECT username FROM user WHERE id = ?", user_id).first["username"]
+                    li #{title["title"]} - #{username}
 
 footer

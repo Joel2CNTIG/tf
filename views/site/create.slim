@@ -2,14 +2,15 @@ form action="/post-create" method="post"
     input type="text" name="title" placeholder="Title"
     input type="text" name="description" placeholder="Description"
     select name="keyword"
+        option value=nil selected="selected"
         -@result.each do |word|
-            option value="#{word}" #{word}
+            option value="#{word["word"]}" #{word["word"]}
     select name="keyword2"
+        option value=nil selected="selected"
         -@result.each do |word|
-            -unless word == params[:keyword]
-                option value="#{word}" #{word}
+            option value="#{word["word"]}" #{word["word"]}
     select name="keyword3"
+        option value=nil selected="selected"
         -@result.each do |word|
-            -unless word == params[:keyword] || word == params[:keyword2]
-                option value="#{word}" #{word}
+            option value="#{word["word"]}" #{word["word"]}
     input type="submit" value="Create!"
