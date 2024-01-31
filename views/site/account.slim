@@ -5,3 +5,5 @@ section
         -@result.each do |title|
             a href="/project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}"
                 h2 #{title["title"]}
+            a href="/project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}/edit"
+                h2 edit

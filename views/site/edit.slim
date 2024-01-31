@@ -1,7 +1,9 @@
-form action="/post-create" method="post"
-    input type="text" name="title" placeholder="Title"
-    input type="text" name="description" placeholder="Description"
-    input type="number" name="price" placeholder="Price (USD)"
+h2 Edit title, description, price and add new keywords
+
+form action="/project/#{params[:id]}/post-edit" method="post"
+    input type="text" name="title" placeholder="#{@db.execute('SELECT title FROM projects WHERE id = ?', params[:id]).first["title"]}"
+    input type="text" name="description" placeholder="#{@db.execute('SELECT description FROM projects WHERE id = ?', params[:id]).first["description"]}"
+    input type="number" name="price" placeholder="$#{@db.execute('SELECT price FROM projects WHERE id = ?', params[:id]).first["price"]}"
     select name="keyword"
         option value=nil selected="selected"
         -@result.each do |word|

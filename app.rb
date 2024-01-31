@@ -8,7 +8,7 @@ enable :sessions
 
 before do
   restricted_routes = ['/account/:id', '/create']
-  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest']
+  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long']
   if session[:tag] == "guest" && restricted_routes.include?(request.path_info)
     redirect('/home')
   end
@@ -60,7 +60,10 @@ post('/post-register') do
   db.results_as_hash = true
   compared_username = db.execute("SELECT username FROM user WHERE username LIKE ?",username).first
   password_digest = BCrypt::Password.create(password)
-  if compared_username == nil && username.length < 20
+  if username.length > 20
+    redirect('/username_too_long')
+  end
+  if compared_username == nil
     db.execute("INSERT INTO user (username, password) VALUES (?,?)",username, password_digest)
     session[:username] = username
     session[:password] = password
@@ -95,7 +98,7 @@ get('/account/:id') do
   @id = params[:id]
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
-  @result = @db.execute("SELECT title FROM projects WHERE user_id = ?", @id)
+  @result = @db.execute("SELECT title FROM projects WHERE user_id = ? ORDER BY id DESC", @id)
   p @result
   slim(:"site/account")
 end
@@ -113,10 +116,8 @@ post('/post-create') do
   id = session[:id]
   title = params[:title]
   description = params[:description]
+  price = params[:price]
   keywords = []
-  p params[:keyword]
-  p params[:keyword2]
-  p params[:keyword3]
   unless params[:keyword] == nil || params[:keyword] == ""
     keywords << params[:keyword]
   end
@@ -126,8 +127,7 @@ post('/post-create') do
   unless params[:keyword3] == nil || params[:keyword3] == ""
     keywords << params[:keyword3]
   end
-  p keywords
-  db.execute("INSERT INTO projects (user_id, title, description, visits) VALUES (?,?,?,?)", id, title, description, 0)
+  db.execute("INSERT INTO projects (user_id, title, description, visits, price) VALUES (?,?,?,?,?)", id, title, description, 0, price)
   proj_id = db.execute("SELECT id FROM projects WHERE title = ?", title).first["id"]
   keywords.each do |word|
     key_id = db.execute("SELECT id FROM keywords WHERE word = ?", word).first["id"]
@@ -143,12 +143,11 @@ get('/project/:id') do
     db.execute("UPDATE projects SET visits = visits + 1 WHERE id = ?", params[:id])
   end
   user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
-  p user_id
   @username = db.execute("SELECT username FROM user WHERE id = ?", user_id).first["username"]
   @title = db.execute("SELECT title FROM projects WHERE id = ?", params[:id]).first["title"]
   @description = db.execute("SELECT description FROM projects WHERE id = ?", params[:id]).first["description"]
+  @price = db.execute("SELECT price FROM projects WHERE id = ?", params[:id]).first["price"]
   keyword_ids = db.execute("SELECT keyword_id FROM project_keyword_relationship WHERE project_id = ?", params[:id])
-  p keyword_ids
   @keywords = []
   keyword_ids.each do |keyid|
     @keywords << db.execute("SELECT word FROM keywords WHERE id = ?", keyid["keyword_id"]).first["word"]
@@ -168,7 +167,17 @@ before('/project/:id/edit') do
 end
 
 get('/project/:id/edit') do
-  
+  @db = connect_db("db/user_info.db")
+  @db.results_as_hash = true
+  @result = @db.execute("SELECT word FROM keywords")
+  slim(:"site/edit")
+end
+
+post('/project/:id/post-edit') do
+  id = params[:id]
+  title = params[:title]
+  description = params[:description]
+  price = params[:price]
 end
 
 get('/admin/create_keyword') do
