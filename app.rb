@@ -98,8 +98,8 @@ get('/account/:id') do
   @id = params[:id]
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
+  @username = @db.execute("SELECT username FROM user WHERE id = ?", @id).first["username"]
   @result = @db.execute("SELECT title FROM projects WHERE user_id = ? ORDER BY id DESC", @id)
-  p @result
   slim(:"site/account")
 end
 
@@ -137,20 +137,21 @@ post('/post-create') do
 end
 
 get('/project/:id') do
-  db = connect_db("db/user_info.db")
-  db.results_as_hash = true
+  @db = connect_db("db/user_info.db")
+  @db.results_as_hash = true
   unless session[:tag] == "guest"
-    db.execute("UPDATE projects SET visits = visits + 1 WHERE id = ?", params[:id])
+    @db.execute("UPDATE projects SET visits = visits + 1 WHERE id = ?", params[:id])
   end
-  user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
-  @username = db.execute("SELECT username FROM user WHERE id = ?", user_id).first["username"]
-  @title = db.execute("SELECT title FROM projects WHERE id = ?", params[:id]).first["title"]
-  @description = db.execute("SELECT description FROM projects WHERE id = ?", params[:id]).first["description"]
-  @price = db.execute("SELECT price FROM projects WHERE id = ?", params[:id]).first["price"]
-  keyword_ids = db.execute("SELECT keyword_id FROM project_keyword_relationship WHERE project_id = ?", params[:id])
+  @user_id = @db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
+  @username = @db.execute("SELECT username FROM user WHERE id = ?", @user_id).first["username"]
+  @title = @db.execute("SELECT title FROM projects WHERE id = ?", params[:id]).first["title"]
+  @proj_id = @db.execute("SELECT id FROM projects WHERE title = ?", @title).first["id"]
+  @description = @db.execute("SELECT description FROM projects WHERE id = ?", params[:id]).first["description"]
+  @price = @db.execute("SELECT price FROM projects WHERE id = ?", params[:id]).first["price"]
+  keyword_ids = @db.execute("SELECT keyword_id FROM project_keyword_relationship WHERE project_id = ?", params[:id])
   @keywords = []
   keyword_ids.each do |keyid|
-    @keywords << db.execute("SELECT word FROM keywords WHERE id = ?", keyid["keyword_id"]).first["word"]
+    @keywords << @db.execute("SELECT word FROM keywords WHERE id = ?", keyid["keyword_id"]).first["word"]
   end
   slim(:"site/project")
 end
@@ -159,9 +160,11 @@ before('/project/:id/edit') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   id_list = db.execute('SELECT id FROM projects WHERE user_id = ?', session[:id])
-  id_list.each do |id|
-    if id["id"] == params[:id]
-      redirect('/home')
+  unless session[:tag] == "admin"
+    id_list.each do |id|
+      if id["id"] == params[:id]
+        redirect('/home')
+      end
     end
   end
 end
@@ -174,10 +177,40 @@ get('/project/:id/edit') do
 end
 
 post('/project/:id/post-edit') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
   id = params[:id]
   title = params[:title]
   description = params[:description]
   price = params[:price]
+  keywords = []
+  unless params[:keyword] == nil || params[:keyword] == ""
+    keywords << params[:keyword]
+  end
+  unless params[:keyword2] == nil || params[:keyword2] == ""
+    keywords << params[:keyword2]
+  end
+  unless params[:keyword3] == nil || params[:keyword3] == ""
+    keywords << params[:keyword3]
+  end
+  unless title == ""
+    db.execute("UPDATE projects SET title = ? WHERE id = #{params[:id]}", title)
+  end
+  unless description == ""
+    db.execute("UPDATE projects SET description = ? WHERE id = #{params[:id]}", description)
+  end
+  unless price == ""
+    db.execute("UPDATE projects SET price = ? WHERE id = #{params[:id]}", price)
+  end
+  keywords.each do |word|
+    key_id = db.execute("SELECT id FROM keywords WHERE word = ?", word).first["id"]
+    db.execute("INSERT INTO project_keyword_relationship (project_id, keyword_id) VALUES (?,?)", params[:id], key_id)
+  end
+  redirect("/project/#{params[:id]}")
+end
+
+get('/admin') do
+  slim(:"admin/admin")
 end
 
 get('/admin/create_keyword') do
@@ -190,4 +223,13 @@ post('/post-create_keyword') do
   db.results_as_hash = true
   db.execute("INSERT INTO keywords (word) VALUES (?)",(keyword))
   redirect('/admin')
+end
+
+post('/post-delete_keyword/:proj_id/:keyword_id') do
+  proj_id = params[:proj_id]
+  keyword_id = params[:keyword_id]
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  db.execute("DELETE FROM project_keyword_relationship WHERE keyword_id = #{keyword_id} AND project_id = #{proj_id}")
+  redirect("/project/#{proj_id}")
 end
