@@ -7,8 +7,16 @@ require 'bcrypt'
 enable :sessions 
 
 before do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
   restricted_routes = ['/account/:id', '/create']
   login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long']
+  if !login_routes.include?(request.path_info) && session[:tag] != "guest" && session[:username] != db.execute("SELECT username FROM user WHERE id = ?", session[:id]).first["username"]
+    redirect('/')
+    session[:tag] = nil
+    session[:username] = nil
+    session[:password] = nil
+  end
   if session[:tag] == "guest" && restricted_routes.include?(request.path_info)
     redirect('/home')
   end
@@ -225,6 +233,17 @@ post('/post-create_keyword') do
   redirect('/admin')
 end
 
+get('/admin/manage_accounts') do
+  @db = connect_db("db/user_info.db")
+  @db.results_as_hash = true
+  @users = @db.execute("SELECT username FROM user")
+  slim(:"admin/manage_accounts")
+end
+
+get('/admin/manage_posts') do
+  
+end
+
 post('/post-delete_keyword/:proj_id/:keyword_id') do
   proj_id = params[:proj_id]
   keyword_id = params[:keyword_id]
@@ -232,4 +251,107 @@ post('/post-delete_keyword/:proj_id/:keyword_id') do
   db.results_as_hash = true
   db.execute("DELETE FROM project_keyword_relationship WHERE keyword_id = #{keyword_id} AND project_id = #{proj_id}")
   redirect("/project/#{proj_id}")
+end
+
+before('/settings/:id/*') do
+  if params[:id].to_i != session[:id] && session[:tag] != "admin"
+    redirect('/home')
+  end
+end
+
+get('/settings/:id') do
+  slim(:"accounts/settings")
+end
+
+get('/settings/:id/change_username') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  @username = db.execute("SELECT username FROM user WHERE id = ?", params[:id]).first["username"]
+  slim(:"accounts/change_username")
+end
+
+post('/settings/:id/post-change_username') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  db.execute("UPDATE user SET username = ? WHERE id = #{params[:id]}", params[:username])
+  unless session[:tag] == "admin"
+    session[:username] = params[:username]
+  end
+  redirect("/settings/#{params[:id]}")
+end
+
+get('/settings/:id/delete_account') do
+  slim(:"/accounts/delete_account")
+end
+
+post('/settings/:id/post-delete_account') do
+  id = params[:id]
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  username = params[:username]
+  password = params[:pwd]
+  compared_username = db.execute("SELECT username FROM user WHERE id = ?", id).first["username"]
+  compared_password = db.execute("SELECT password FROM user WHERE id = ?", id).first["password"]
+  if username == compared_username && BCrypt::Password.new(compared_password) == password && session[:tag] != "admin"
+    project_ids = db.execute("SELECT id FROM projects WHERE user_id = ?", id)
+    project_ids.each do |projid|
+      id = projid["id"]
+      db.execute("DELETE FROM projects WHERE id = ?", id)
+      db.execute("DELETE FROM project_keyword_relationship WHERE project_id = ?", id)
+    end
+    db.execute("DELETE FROM user WHERE id = ?", id)
+    redirect('/')
+  else
+    redirect("settings/#{id}/delete_account")
+  end
+end
+
+get('/home/search/:key1/:key2/:key3') do
+  @db = connect_db("db/user_info.db")
+  @db.results_as_hash = true
+  @result = @db.execute("SELECT word FROM keywords")
+  keyids = [params[:key1], params[:key2], params[:key3]]
+  project_ids = []
+  keyids.each do |id|
+    project_ids << @db.execute("SELECT project_id FROM project_keyword_relationship WHERE keyword_id = ?", id) 
+  end
+  @projects = []
+  project_ids.each do |idarray|
+    idarray.each do |id|
+      @projects << @db.execute("SELECT title FROM projects WHERE id = ?", id["project_id"]).first
+    end
+  end
+  if @projects == []
+    @projects = @db.execute("SELECt title FROM projects")
+  end
+  @projects = @projects.uniq
+  slim(:"/site/search")
+end
+
+post('/post-search') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  if params[:keyword] == ""
+    key1 = "none"
+  else
+    key1 = db.execute("SELECT id FROM keywords WHERE word = ?", params[:keyword]).first["id"]
+  end
+  if params[:keyword2] == ""
+    key2 = "none"
+  else
+    key2 = db.execute("SELECT id FROM keywords WHERE word = ?", params[:keyword2]).first["id"]
+  end
+  if params[:keyword3] == ""
+    key3 = "none"
+  else
+    key3 = db.execute("SELECT id FROM keywords WHERE word = ?", params[:keyword3]).first["id"]
+  end
+  redirect("/home/search/#{key1}/#{key2}/#{key3}")
+end
+
+post('/post-logout') do
+  session[:username] == nil
+  session[:tag] == nil
+  session[:password] == nil
+  redirect('/')
 end

@@ -1,0 +1,7 @@
+-@users.each do |name|
+    -id = @db.execute("SELECT id FROM user WHERE username = ?", name["username"]).first["id"]
+    a href="/../account/#{id}"
+        p #{name["username"]}
+    a href="/../admin/delete_account/#{id}"
+        button 
+            p delete

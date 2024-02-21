@@ -16,4 +16,4 @@ form action="/project/#{params[:id]}/post-edit" method="post"
         option value=nil selected="selected"
         -@result.each do |word|
             option value="#{word["word"]}" #{word["word"].capitalize()}
-    input type="submit" value="Create!"
+    input type="submit" value="Edit!"

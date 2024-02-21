@@ -1,0 +1,8 @@
+h1 ARE YOU SURE?
+h2 Are you sure you want to delete your account? This action cannot be undone! 
+h3 Enter username and password to proceed with deletion: 
+
+form action="/settings/#{params[:id]}/post-delete_account" method="post"
+    input type="text" name="username" placeholder="Username"
+    input type="password" name="pwd" placeholder="Password"
+    input type="submit" value="Delete"

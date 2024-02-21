@@ -1,0 +1,19 @@
+form action="/post-search" method="post"
+    select name="keyword"
+        option value=nil selected="selected"
+        -@result.each do |word|
+            option value="#{word["word"]}" #{word["word"].capitalize()}
+    select name="keyword2"
+        option value=nil selected="selected"
+        -@result.each do |word|
+            option value="#{word["word"]}" #{word["word"].capitalize()}
+    select name="keyword3"
+        option value=nil selected="selected"
+        -@result.each do |word|
+            option value="#{word["word"]}" #{word["word"].capitalize()}
+    input type="submit" value="Filter"
+
+#projblock 
+    -@projects.each do |title|
+        a href="/../project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}"
+            h3 #{title["title"]}

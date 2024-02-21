@@ -1,0 +1,11 @@
+h1 Welcome #{session[:username]}!
+
+-unless session[:tag] == "admin"
+    a href="/settings/#{session[:id]}/change_username"
+        h2 Change Username
+
+    a href="/settings/#{session[:id]}/delete_account"
+        h2 Delete Account
+
+form action="/../post-logout" method="post"
+    input type="submit" value="Log out"

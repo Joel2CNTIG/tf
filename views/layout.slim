@@ -14,9 +14,14 @@ html lang="en"
           h2 class="nav_text" My Account 
         a href="/create" 
           h2 class="nav_text" Create Listing 
+        a href="/settings/#{session[:id]}"
+          h2 class="nav_text" Settings
       -if session[:tag] == "admin"
         a href="/admin" 
           h2 class="nav_text" Manage Site
+      -if session[:tag] == "guest"
+        a href="/login"
+          h2 class="nav_text" Log in
     header
       h1 class="header_text" dollarr.
 
