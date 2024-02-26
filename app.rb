@@ -10,7 +10,7 @@ before do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   restricted_routes = ['/account/:id', '/create']
-  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long']
+  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long', '/username_already_exists']
   if !login_routes.include?(request.path_info) && session[:tag] != "guest" && session[:username] != db.execute("SELECT username FROM user WHERE id = ?", session[:id]).first["username"]
     redirect('/')
     session[:tag] = nil
@@ -64,6 +64,7 @@ end
 post('/post-register') do
   username = params[:username]
   password = params[:pwd]
+  password_again = params[:pwd_again]
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   compared_username = db.execute("SELECT username FROM user WHERE username LIKE ?",username).first
@@ -71,19 +72,23 @@ post('/post-register') do
   if username.length > 20
     redirect('/username_too_long')
   end
-  if compared_username == nil
-    db.execute("INSERT INTO user (username, password) VALUES (?,?)",username, password_digest)
-    session[:username] = username
-    session[:password] = password
-    if username == "admin" 
-      session[:tag] = "admin"
+  if password_again == password
+    if compared_username == nil 
+      db.execute("INSERT INTO user (username, password) VALUES (?,?)",username, password_digest)
+      session[:username] = username
+      session[:password] = password
+      if username == "admin" 
+        session[:tag] = "admin"
+      else
+        session[:tag] = "user"
+      end
+      session[:id] = db.execute("SELECT id FROM user WHERE username = ?",username).first["id"]
+      redirect('/home')
     else
-      session[:tag] = "user"
+      redirect('/username_already_exists')
     end
-    session[:id] = db.execute("SELECT id FROM user WHERE username = ?",username).first["id"]
-    redirect('/home')
   else
-    redirect('/username_already_exists')
+    redirect('/')
   end
 end
 
@@ -217,6 +222,27 @@ post('/project/:id/post-edit') do
   redirect("/project/#{params[:id]}")
 end
 
+before('/project/:id/delete') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id])
+  if session[:id] != user_id && session[:tag] != "admin"
+    redirect('/home')
+  end
+end
+
+get('/project/:id/delete') do
+  slim(:"/site/delete")
+end
+
+post('/project/:id/post-delete_post') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  db.execute("DELETE FROM projects WHERE id = ?", params[:id])
+  db.execute("DELETE FROM project_keyword_relationship WHERE project_id = ?", params[:id])
+  redirect('/home')
+end
+
 get('/admin') do
   slim(:"admin/admin")
 end
@@ -241,7 +267,10 @@ get('/admin/manage_accounts') do
 end
 
 get('/admin/manage_posts') do
-  
+  @db = connect_db("db/user_info.db")
+  @db.results_as_hash = true
+  @posts = @db.execute("SELECT title, id FROM projects")
+  slim(:"/admin/manage_posts")
 end
 
 post('/post-delete_keyword/:proj_id/:keyword_id') do
