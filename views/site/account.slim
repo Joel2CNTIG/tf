@@ -7,4 +7,5 @@ section
                 h2 #{title["title"]}
             -if @username == session[:username] || session[:tag] == "admin"
                 a href="/project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}/edit"
-                    h2 edit
+                    button 
+                        h3 edit

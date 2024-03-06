@@ -12,10 +12,11 @@ a {
 body {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 100px 150px 1600px 100px;
+    grid-template-rows: 100px 150px 200px 1600px 100px;
     grid-template-areas: 
     "na na"
     "he he"
+    "ti ti"
     "s1 s1"
     "fo fo";
 }
@@ -73,4 +74,19 @@ section {
 
 footer {
     background-color: green;
+}
+
+#title {
+    grid-area: ti;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: red;
+}
+
+#title_edit_name {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }

@@ -15,3 +15,6 @@ form action="/post-create" method="post"
         -@result.each do |word|
             option value="#{word["word"]}" #{word["word"].capitalize()}
     input type="submit" value="Create!"
+-if session[:status] == "create_error"
+    h3 Create prompt is incomplete! Your post must include a title, description and price!
+    -session[:status] = nil

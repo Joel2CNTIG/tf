@@ -1,12 +1,17 @@
--if @user_id == session[:id] || session[:tag] == "admin"
-    a href="/project/#{@proj_id}/edit"
-        h2 edit
-h1 #{@title}
-h2 Created by 
-a href="/account/#{@db.execute("SELECT id FROM user WHERE username = ?", @username).first["id"]}" 
-    h2 #{@username}
+#title
+    #title_edit_name
+        -if @user_id == session[:id] || session[:tag] == "admin"
+            a href="/project/#{@proj_id}/edit"
+                h2 edit
+        h1 #{@title}
+    #title_user
+        h2 Created by 
+        a href="/account/#{@db.execute("SELECT id FROM user WHERE username = ?", @username).first["id"]}" 
+            h2 #{@username}
 #description
     p #{@description}
+#price 
+    p price: $#{@price}
 p keywords: 
 ul 
     -@keywords.each do |keyword|

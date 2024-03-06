@@ -1,8 +1,20 @@
 form action="/post-register" method="post"
-    input type="text" name="username" placeholder="Username"
+    input type="text" name="username" maxlength="20" placeholder="Username (max 20 char)"
     input type="password" name="pwd" placeholder="Password"
     input type="password" name="pwd_again" placeholder="Enter password again"
     input type="submit" value="Register!"
+-if session[:status] == "toolong"
+    h3 Username too long! 
+    -session[:status] = nil
+-elsif session[:status] == "nomatch"
+    h3 Password and reentered password must match! 
+    -session[:status] = nil
+-elsif session[:status] == "alreadyexists"
+    h3 Username already exists! 
+    -session[:status] = nil
+-elsif session[:status] == "forbiddenchar"
+    h3 Username contains forbidden characters
+    -session[:status] = nil
 
 form action="/post-guest" method="post"
     input type="submit" value="Enter as guest"
