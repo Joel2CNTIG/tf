@@ -1,3 +1,7 @@
+-if session[:status] == "alreadyexists"
+    h2 username already exists!
+    -session[:status] = nil 
+
 form action="/settings/#{params[:id]}/post-change_username" method="post"
-    input type="text" name="username" placeholder="#{@username}"
+    input type="text" name="username" maxlength="20" placeholder="#{@username}"
     input type="submit" value="Change!"

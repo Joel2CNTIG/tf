@@ -29,20 +29,27 @@ def connect_db(path)
   return SQLite3::Database.new(path)
 end
 
-def before(db)
-  restricted_routes = ['/account/:id', '/create']
+def before_all(db)
+  restricted_routes = ['/create']
   login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long', '/username_already_exists', '/post-too_long']
-  if !login_routes.include?(request.path_info) && session[:tag] != "guest" && session[:username] != db.execute("SELECT username FROM user WHERE id = ?", session[:id]).first["username"]
-    redirect('/')
+  if session[:id] == nil && !login_routes.include?(request.path_info) && session[:tag] != "guest"
     session[:tag] = nil
     session[:username] = nil
     session[:password] = nil
     session[:status] = nil 
+    redirect('/')
+  end
+  if !login_routes.include?(request.path_info) && session[:tag] != "guest" && session[:username] != db.execute("SELECT username FROM user WHERE id = ?", session[:id]).first["username"]
+    session[:tag] = nil
+    session[:username] = nil
+    session[:password] = nil
+    session[:status] = nil 
+    redirect('/')
   end
   if session[:tag] == "guest" && restricted_routes.include?(request.path_info)
     redirect('/home')
   end
-  if session[:tag] != "admin" && request.path_info == '/admin/*' 
+  if session[:tag] != "admin" && request.path_info.include?('/admin')
     redirect('/home')
   end
   if session[:tag] == nil && !login_routes.include?(request.path_info)

@@ -3,14 +3,14 @@ require 'sinatra/reloader'
 require 'slim'
 require 'sqlite3'
 require 'bcrypt'
-require_relative 'functions.rb'
+require_relative 'model.rb'
 enable :sessions 
 
 
 before do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  before(db)
+  before_all(db)
 end
 
 get('/') do
@@ -28,6 +28,7 @@ post('/post-login') do
   db.results_as_hash = true
   result = db.execute("SELECT password FROM user WHERE username = ?",username).first
   post_login(db, username, password)
+  {"name"=>"josef"}
 end
   
 post('/post-register') do
@@ -51,6 +52,23 @@ get('/home') do
   @recent = @db.execute("SELECT title FROM projects ORDER BY id DESC LIMIT 5")
   @popular = @db.execute("SELECT title FROM projects ORDER By visits DESC LIMIT 5")
   slim(:"site/home")
+end
+
+before('/account/:id') do
+  id = params[:id]
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  user_ids = db.execute("SELECT id FROM user")
+  id_exists = false
+  user_ids.each do |userid|
+    userid = userid["id"]
+    if userid == id.to_i
+      id_exists = true
+    end
+  end
+  if id_exists == false
+    redirect('/home')
+  end
 end
 
 get('/account/:id') do
@@ -88,12 +106,8 @@ get('/project/:id') do
   unless session[:tag] == "guest"
     @db.execute("UPDATE projects SET visits = visits + 1 WHERE id = ?", params[:id])
   end
-  @user_id = @db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
-  @username = @db.execute("SELECT username FROM user WHERE id = ?", @user_id).first["username"]
-  @title = @db.execute("SELECT title FROM projects WHERE id = ?", params[:id]).first["title"]
-  @proj_id = @db.execute("SELECT id FROM projects WHERE title = ?", @title).first["id"]
-  @description = @db.execute("SELECT description FROM projects WHERE id = ?", params[:id]).first["description"]
-  @price = @db.execute("SELECT price FROM projects WHERE id = ?", params[:id]).first["price"]
+  @projinfo = @db.execute("SELECT * FROM projects WHERE id = ?", params[:id]).first
+  @username = @db.execute("SELECT username FROM user WHERE id = ?", @projinfo["user_id"]).first["username"]
   keyword_ids = @db.execute("SELECT keyword_id FROM project_keyword_relationship WHERE project_id = ?", params[:id])
   @keywords = []
   keyword_ids.each do |keyid|
@@ -219,8 +233,16 @@ end
 post('/settings/:id/post-change_username') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  db.execute("UPDATE user SET username = ? WHERE id = #{params[:id]}", params[:username])
-  unless session[:tag] == "admin"
+  all_usernames = db.execute("SELECT username FROM user")
+  all_usernames.each do |username|
+    username = username["username"]
+    if params[:username] == username
+      session[:status] = "alreadyexists"
+      redirect("/settings/#{params[:id]}/change_username")
+    end
+  end
+  unless session[:tag] == "admin" 
+    db.execute("UPDATE user SET username = ? WHERE id = #{params[:id]}", params[:username])
     session[:username] = params[:username]
   end
   redirect("/settings/#{params[:id]}")

@@ -1,22 +1,22 @@
 #title
     #title_edit_name
-        -if @user_id == session[:id] || session[:tag] == "admin"
-            a href="/project/#{@proj_id}/edit"
+        -if @projinfo["user_id"] == session[:id] || session[:tag] == "admin"
+            a href="/project/#{@projinfo["id"]}/edit"
                 h2 edit
-        h1 #{@title}
+        h1 #{@projinfo["title"]}
     #title_user
         h2 Created by 
         a href="/account/#{@db.execute("SELECT id FROM user WHERE username = ?", @username).first["id"]}" 
             h2 #{@username}
 #description
-    p #{@description}
+    p #{@projinfo["description"]}
 #price 
-    p price: $#{@price}
+    p price: $#{@projinfo["price"]}
 p keywords: 
 ul 
     -@keywords.each do |keyword|
         li 
             p #{keyword.capitalize()}
-            -if @user_id == session[:id] || session[:tag] == "admin"
+            -if @projinfo["user_id"] == session[:id] || session[:tag] == "admin"
                 form action="/post-delete_keyword/#{params[:id]}/#{@db.execute("SELECT id FROM keywords WHERE word = ?", keyword).first["id"]}" method="post"
                     input type="submit" value="Delete"

@@ -13,7 +13,7 @@ form action="/post-register" method="post"
     h3 Username already exists! 
     -session[:status] = nil
 -elsif session[:status] == "forbiddenchar"
-    h3 Username contains forbidden characters
+    h3 Username contains forbidden characters!
     -session[:status] = nil
 
 form action="/post-guest" method="post"
