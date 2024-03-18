@@ -20,3 +20,5 @@ ul
             -if @projinfo["user_id"] == session[:id] || session[:tag] == "admin"
                 form action="/post-delete_keyword/#{params[:id]}/#{@db.execute("SELECT id FROM keywords WHERE word = ?", keyword).first["id"]}" method="post"
                     input type="submit" value="Delete"
+a href="project/#{@projinfo["id"]}/delete"
+    h2 Delete post

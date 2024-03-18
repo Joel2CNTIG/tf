@@ -6,6 +6,10 @@ section
             a href="/project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}"
                 h2 #{title["title"]}
             -if @username == session[:username] || session[:tag] == "admin"
-                a href="/project/#{@db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]}/edit"
+                -id = @db.execute("SELECT id FROM projects WHERE title = ?", title["title"]).first["id"]
+                a href="/project/#{id}/edit"
                     button 
                         h3 edit
+                a href="/project/#{id}/delete"
+                    button 
+                        h3 delete

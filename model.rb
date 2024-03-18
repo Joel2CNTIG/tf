@@ -12,16 +12,18 @@ def average(arr)
 end
 
 def timeout(time_arr)
-  time_arr = time_arr.last[5]
-  time_intervals = []
-  compared_time = time_arr[0]
-  time_arr.each do |time|
-    new_time = time - compared_time
-    time_intervals << new_time
-  end
-  if average(time_intervals) <= 1
-    session[:status] = "toofast"
-    redirect('/')
+  time_arr = time_arr.last(5)
+  if time_arr.length == 5
+    time_intervals = []
+    compared_time = time_arr[0]
+    time_arr.each do |time|
+      new_time = time - compared_time
+      time_intervals << new_time
+    end
+    if average(time_intervals) <= 1
+      session[:status] = "toofast"
+      redirect('/login')
+    end
   end
 end
 
@@ -30,8 +32,18 @@ def connect_db(path)
 end
 
 def before_all(db)
+  if session[:cooldown] == true
+    session[:time2] = Time.now
+    if session[:time2] - session[:time1] > 5
+      session[:cooldown] = false
+    else
+      unless request.path_info.include?('/cooldown')
+      redirect('/../cooldown')
+      end
+    end
+  end
   restricted_routes = ['/create']
-  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long', '/username_already_exists', '/post-too_long']
+  login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long', '/username_already_exists', '/post-too_long', '/cooldown']
   if session[:id] == nil && !login_routes.include?(request.path_info) && session[:tag] != "guest"
     session[:tag] = nil
     session[:username] = nil
@@ -58,6 +70,8 @@ def before_all(db)
 end
 
 def post_login(db, username, password)
+  session[:time_arr] << Time.now
+  timeout(session[:time_arr])
   result = db.execute("SELECT password FROM user WHERE username = ?",username).first
   if result != nil && BCrypt::Password.new(result["password"]) == password
     session[:username] = username
@@ -186,9 +200,9 @@ def post_settings_delete_account(db, id, username, password)
 end
 
 def post_admin_delete_account(db, id)
-  id = params[:id]
-  db = connect_db("db/user_info.db")
-  db.results_as_hash = true
+  if id == "1"
+    redirect('/admin')
+  end
   project_ids = db.execute("SELECT id FROM projects WHERE user_id = ?", id)
   project_ids.each do |projid|
     project_id = projid["id"]

@@ -8,6 +8,9 @@ enable :sessions
 
 
 before do
+  if session[:time_arr] == nil
+    session[:time_arr] = []
+  end
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   before_all(db)
@@ -18,7 +21,16 @@ get('/') do
 end
 
 get('/login') do
+  if session[:status] == "toofast"
+    redirect('/cooldown')
+  end
   slim(:"accounts/login", layout: :login_layout)
+end
+
+get('/cooldown') do
+  session[:cooldown] = true
+  session[:time1] = Time.now
+  slim(:"site/cooldown", layout: :login_layout)
 end
 
 post('/post-login') do
@@ -28,7 +40,6 @@ post('/post-login') do
   db.results_as_hash = true
   result = db.execute("SELECT password FROM user WHERE username = ?",username).first
   post_login(db, username, password)
-  {"name"=>"josef"}
 end
   
 post('/post-register') do
