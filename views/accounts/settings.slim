@@ -4,8 +4,14 @@ h1 Welcome #{session[:username]}!
     a href="/settings/#{session[:id]}/change_username"
         h2 Change Username
 
+    a href="/settings/#{session[:id]}/change_password"
+        h2 Change password
+
     a href="/settings/#{session[:id]}/delete_account"
         h2 Delete Account
+-if session[:status] == "changedpwd"
+    h2 Password changed!
+    -session[:status] = nil
 
 form action="/../post-logout" method="post"
     input type="submit" value="Log out"

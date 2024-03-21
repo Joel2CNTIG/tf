@@ -2,7 +2,8 @@
     #title_edit_name
         -if @projinfo["user_id"] == session[:id] || session[:tag] == "admin"
             a href="/project/#{@projinfo["id"]}/edit"
-                h2 edit
+                button
+                    h2 edit
         h1 #{@projinfo["title"]}
     #title_user
         h2 Created by 
@@ -20,5 +21,6 @@ ul
             -if @projinfo["user_id"] == session[:id] || session[:tag] == "admin"
                 form action="/post-delete_keyword/#{params[:id]}/#{@db.execute("SELECT id FROM keywords WHERE word = ?", keyword).first["id"]}" method="post"
                     input type="submit" value="Delete"
-a href="project/#{@projinfo["id"]}/delete"
-    h2 Delete post
+-if @projinfo["user_id"] == session[:id] || session[:tag] == "admin"
+    a href="/project/#{@projinfo["id"]}/delete"
+        h2 Delete post

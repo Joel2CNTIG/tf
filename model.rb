@@ -20,8 +20,10 @@ def timeout(time_arr)
       new_time = time - compared_time
       time_intervals << new_time
     end
-    if average(time_intervals) <= 1
+    if average(time_intervals) <= 10
       session[:status] = "toofast"
+      session[:cooldown] = true
+      session[:time1] = Time.now
       redirect('/login')
     end
   end
@@ -35,10 +37,14 @@ def before_all(db)
   if session[:cooldown] == true
     session[:time2] = Time.now
     if session[:time2] - session[:time1] > 5
-      session[:cooldown] = false
+      session[:cooldown] = false 
+      session[:time1] = nil
+      session[:time2] = nil
+      session[:status] = nil
+      session[:time_arr] = nil
     else
       unless request.path_info.include?('/cooldown')
-      redirect('/../cooldown')
+        redirect('/../cooldown')
       end
     end
   end
@@ -176,6 +182,25 @@ def post_edit(db, id, title, description, price, keyword1, keyword2, keyword3)
     db.execute("INSERT INTO project_keyword_relationship (project_id, keyword_id) VALUES (?,?)", id, key_id)
   end
   redirect("/project/#{id}")
+end
+
+def post_settings_change_password(db, id, pwd, old_pwd, pwd_again)
+  compared_old_pwd = db.execute("SELECT password FROM user WHERE id = ?", id).first["password"]
+  if BCrypt::Password.new(compared_old_pwd) == old_pwd
+    if pwd == pwd_again
+      password_digest = BCrypt::Password.create(pwd)
+      db.execute("UPDATE user SET password = ? WHERE id = ?", password_digest, id)
+      session[:password] = pwd
+      session[:status] = "changedpwd"
+      redirect("/settings/#{id}")
+    else
+      session[:status] = "nomatch"
+      redirect("/settings/#{id}/change_password")
+    end
+  else
+    session[:status] = "wrongpwd"
+    redirect("/settings/#{id}/change_password")
+  end
 end
 
 def post_settings_delete_account(db, id, username, password)

@@ -6,7 +6,8 @@ require 'bcrypt'
 require_relative 'model.rb'
 enable :sessions 
 
-
+#Runs before every route - checks authorization and login cooldowns
+#
 before do
   if session[:time_arr] == nil
     session[:time_arr] = []
@@ -16,10 +17,14 @@ before do
   before_all(db)
 end
 
+#Displays a register form
+#
 get('/') do
   slim(:"accounts/register", layout: :login_layout)
 end
 
+#Displays a login form
+#
 get('/login') do
   if session[:status] == "toofast"
     redirect('/cooldown')
@@ -28,8 +33,6 @@ get('/login') do
 end
 
 get('/cooldown') do
-  session[:cooldown] = true
-  session[:time1] = Time.now
   slim(:"site/cooldown", layout: :login_layout)
 end
 
@@ -163,7 +166,7 @@ end
 before('/project/:id/delete') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id])
+  user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
   if session[:id] != user_id && session[:tag] != "admin"
     redirect('/home')
   end
@@ -257,6 +260,20 @@ post('/settings/:id/post-change_username') do
     session[:username] = params[:username]
   end
   redirect("/settings/#{params[:id]}")
+end
+
+get('/settings/:id/change_password') do
+  slim(:"/accounts/change_password")
+end
+
+post('/settings/:id/post-change_password') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  id = params[:id]
+  old_pwd = params[:old_pwd]
+  pwd = params[:pwd]
+  pwd_again = params[:pwd_again]
+  post_settings_change_password(db, id, pwd, old_pwd, pwd_again)
 end
 
 get('/settings/:id/delete_account') do
