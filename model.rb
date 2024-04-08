@@ -102,6 +102,10 @@ def post_register(db, username, password, password_again)
     session[:status] = "toolong"
     redirect('/')
   end
+  if username == "" || password == "" 
+    session[:status] = "emptyfields"
+    redirect('/')
+  end
   forbidden_chars = [" ", ",", ":", ";", "?", "!", "]", "[", "&", "=", "}", "{", "%", "¤", "$", "#", "£", "'", "@", "ä", "å", "ö", "|", "<", ">"]
   forbidden_chars.each do |char|
     if username.include?(char)

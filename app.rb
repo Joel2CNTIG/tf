@@ -7,7 +7,7 @@ require_relative 'model.rb'
 enable :sessions 
 
 #Runs before every route - checks authorization and login cooldowns
-#
+# @see Model#before_all
 before do
   if session[:time_arr] == nil
     session[:time_arr] = []
@@ -32,10 +32,14 @@ get('/login') do
   slim(:"accounts/login", layout: :login_layout)
 end
 
+#Shows cooldown message
+#
 get('/cooldown') do
   slim(:"site/cooldown", layout: :login_layout)
 end
 
+#Attempts login
+# @see Model#post_login
 post('/post-login') do
   username = params[:username]
   password = params[:pwd]
@@ -45,6 +49,8 @@ post('/post-login') do
   post_login(db, username, password)
 end
   
+#Attemps to register user
+# @see Model#post_register
 post('/post-register') do
   username = params[:username]
   password = params[:pwd]
@@ -54,12 +60,16 @@ post('/post-register') do
   post_register(db, username, password, password_again)
 end
 
+#Logs in as guest
+#
 post('/post-guest') do
   session[:username] = "guest"
   session[:tag] = "guest"
   redirect('/home')
 end
 
+#Shows a home page
+#
 get('/home') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -67,6 +77,7 @@ get('/home') do
   @popular = @db.execute("SELECT title FROM projects ORDER By visits DESC LIMIT 5")
   slim(:"site/home")
 end
+
 
 before('/account/:id') do
   id = params[:id]

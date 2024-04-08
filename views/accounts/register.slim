@@ -15,6 +15,9 @@ form action="/post-register" method="post"
 -elsif session[:status] == "forbiddenchar"
     h3 Username contains forbidden characters!
     -session[:status] = nil
+-elsif session[:status] == "emptyfields"
+    h3 Username or password is empty! 
+    -session[:status] = nil
 
 form action="/post-guest" method="post"
     input type="submit" value="Enter as guest"
