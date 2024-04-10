@@ -6,8 +6,12 @@ require 'bcrypt'
 require_relative 'model.rb'
 enable :sessions 
 
-#Runs before every route - checks authorization and login cooldowns
+include Model
+
+# Runs before every route - checks authorization and login cooldowns
+#
 # @see Model#before_all
+# @See Model#connect_db
 before do
   if session[:time_arr] == nil
     session[:time_arr] = []
@@ -17,13 +21,13 @@ before do
   before_all(db)
 end
 
-#Displays a register form
+# Displays a register form
 #
 get('/') do
   slim(:"accounts/register", layout: :login_layout)
 end
 
-#Displays a login form
+# Displays a login form
 #
 get('/login') do
   if session[:status] == "toofast"
@@ -32,14 +36,18 @@ get('/login') do
   slim(:"accounts/login", layout: :login_layout)
 end
 
-#Shows cooldown message
+# Shows cooldown message
 #
 get('/cooldown') do
   slim(:"site/cooldown", layout: :login_layout)
 end
 
-#Attempts login
+# Attempts login
+# @param [String] username, the entered username
+# @param [String] pwd, the entered password
+#
 # @see Model#post_login
+# @See Model#connect_db
 post('/post-login') do
   username = params[:username]
   password = params[:pwd]
@@ -49,8 +57,13 @@ post('/post-login') do
   post_login(db, username, password)
 end
   
-#Attemps to register user
+# Attemps to register user
+# @param [String] username, the entered username
+# @param [String] pwd, the entered password
+# @param [String] pwd_again, the second entered password
+#
 # @see Model#post_register
+# @See Model#connect_db
 post('/post-register') do
   username = params[:username]
   password = params[:pwd]
@@ -60,7 +73,7 @@ post('/post-register') do
   post_register(db, username, password, password_again)
 end
 
-#Logs in as guest
+# Logs in as guest
 #
 post('/post-guest') do
   session[:username] = "guest"
@@ -68,8 +81,9 @@ post('/post-guest') do
   redirect('/home')
 end
 
-#Shows a home page
-#
+# Shows a home page
+# 
+# @See Model#connect_db
 get('/home') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -78,7 +92,10 @@ get('/home') do
   slim(:"site/home")
 end
 
-
+# Runs before showing an account to make sure that the account exists
+# @param [Integer] id, the id associated with the account
+# 
+# @See Model#connect_db
 before('/account/:id') do
   id = params[:id]
   db = connect_db("db/user_info.db")
@@ -96,6 +113,10 @@ before('/account/:id') do
   end
 end
 
+# Displays an account aswell as a CRUD interface if the user has the necessary permissions
+# @param [Integer] id, the id associated with the account
+# 
+# @See Model#connect_db
 get('/account/:id') do
   @id = params[:id]
   @db = connect_db("db/user_info.db")
@@ -105,6 +126,9 @@ get('/account/:id') do
   slim(:"site/account")
 end
 
+# Create interface
+# 
+# @See Model#connect_db
 get('/create') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -112,6 +136,16 @@ get('/create') do
   slim(:"site/create")
 end
 
+# Creates post and adds to database
+# @param [String] title, title of the post
+# @param [String] description, description of the post
+# @param [Integer] price, price of the post
+# @param [String] keyword, first selected keyword
+# @param [String] keyword2, second selected keyword
+# @param [String] keyword3, third selected keyword
+#
+# @See Model#post_create
+# @See Model#connect_db
 post('/post-create') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -125,6 +159,10 @@ post('/post-create') do
   post_create(db, id, title, description, price, keyword1, keyword2, keyword3)
 end
 
+# Displays a post aswell as a CRUD interface if the user has the necessary permissions
+# @param [Integer] id, the id associated with the post
+#
+# @See Model#connect_db
 get('/project/:id') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -141,6 +179,10 @@ get('/project/:id') do
   slim(:"site/project")
 end
 
+# Runs before showing a project edit-page, makes sure user has necessary permissions
+# @param [Integer] id, id associated with the project
+#
+# @See Model#connect_db
 before('/project/:id/edit') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -154,6 +196,10 @@ before('/project/:id/edit') do
   end
 end
 
+# Shows an edit-project page
+# @param [Integer] id, id associated with the project
+#
+# @See Model#connect_db
 get('/project/:id/edit') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -161,6 +207,17 @@ get('/project/:id/edit') do
   slim(:"site/edit")
 end
 
+# Edits the post
+# @param [Integer] id, id associated with the post
+# @param [String] title, title of the post
+# @param [String] description, description of the post
+# @param [Integer] price, price of the post
+# @param [String] keyword, first selected keyword
+# @param [String] keyword2, second selected keyword
+# @param [String] keyword3, third selected keyword
+#
+# @See Model#post_edit
+# @See Model#connect_db
 post('/project/:id/post-edit') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -174,6 +231,10 @@ post('/project/:id/post-edit') do
   post_edit(db, id, title, description, price, keyword1, keyword2, keyword3)
 end
 
+# Runs before opening a project delete form, makes sure user has permission to do so
+# @param [Integer] id, id of post
+#
+# @See Model#connect_db
 before('/project/:id/delete') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -183,10 +244,29 @@ before('/project/:id/delete') do
   end
 end
 
+# Runs before deleting a project, makes sure user has permission to do so
+# @param [Integer] id, id of post
+# 
+# @See Model#connect_db
+before('/project/:id/post-delete_post') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  user_id = db.execute("SELECT user_id FROM projects WHERE id = ?", params[:id]).first["user_id"]
+  if session[:id] != user_id && session[:tag] != "admin"
+    redirect('/home')
+  end
+end
+
+# Shows a project delete form
+# @param [Integer] id, id of project
 get('/project/:id/delete') do
   slim(:"/site/delete")
 end
 
+# Deletes a project
+# @param [Integer] id, id of project
+# 
+# @See Model#connect_db
 post('/project/:id/post-delete_post') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -195,15 +275,23 @@ post('/project/:id/post-delete_post') do
   redirect('/home')
 end
 
+# Displays a basic admin menu
+#
 get('/admin') do
   slim(:"admin/admin")
 end
 
+# Displays a keyword creation form
+#
 get('/admin/create_keyword') do
   slim(:"admin/create_keyword")
 end
 
-post('/post-create_keyword') do
+# Creates keyword
+# @param [String] keyword, name of keyword to create
+# 
+# @See Model#connect_db
+post('/admin/post-create_keyword') do
   keyword = params[:keyword]
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -211,6 +299,9 @@ post('/post-create_keyword') do
   redirect('/admin')
 end
 
+# Shows all accounts aswell as crud-interface for them
+# 
+# @See Model#connect_db
 get('/admin/manage_accounts') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -218,6 +309,9 @@ get('/admin/manage_accounts') do
   slim(:"admin/manage_accounts")
 end
 
+# Shows all posts aswell as crud interface for them
+# 
+# @See Model#connect_db
 get('/admin/manage_posts') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -225,10 +319,17 @@ get('/admin/manage_posts') do
   slim(:"/admin/manage_posts")
 end
 
+# Account deletion form for admin account
+# @param [Integer] id, id of account
 get('/admin/delete_account/:id') do
   slim(:"/admin/delete_account")
 end
 
+# Deletes keyword from project
+# @param [Integer] proj_id, id of project
+# @param [Integer] keyword_id, id of keyword to delete
+# 
+# @See Model#connect_db
 post('/post-delete_keyword/:proj_id/:keyword_id') do
   proj_id = params[:proj_id]
   keyword_id = params[:keyword_id]
@@ -238,16 +339,24 @@ post('/post-delete_keyword/:proj_id/:keyword_id') do
   redirect("/project/#{proj_id}")
 end
 
+# Runs before all settings pages, makes sure user is authorized to view them
+# @param [Integer] id, id of user corresponding with setting page
 before('/settings/:id/*') do
   if params[:id].to_i != session[:id] && session[:tag] != "admin"
     redirect('/home')
   end
 end
 
+# Shows settings menu
+# @param [Integer] id, user id
 get('/settings/:id') do
   slim(:"accounts/settings")
 end
 
+# Shows change username form
+# @param [Integer] id, user id
+# 
+# @See Model#connect_db
 get('/settings/:id/change_username') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -255,28 +364,32 @@ get('/settings/:id/change_username') do
   slim(:"accounts/change_username")
 end
 
+# Changes username
+# @param [Integer] id, user id
+# @param [String] username, username
+# 
+# @See Model#post_settings_change_username
+# @See Model#connect_db
 post('/settings/:id/post-change_username') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  all_usernames = db.execute("SELECT username FROM user")
-  all_usernames.each do |username|
-    username = username["username"]
-    if params[:username] == username
-      session[:status] = "alreadyexists"
-      redirect("/settings/#{params[:id]}/change_username")
-    end
-  end
-  unless session[:tag] == "admin" 
-    db.execute("UPDATE user SET username = ? WHERE id = #{params[:id]}", params[:username])
-    session[:username] = params[:username]
-  end
-  redirect("/settings/#{params[:id]}")
+  post_settings_change_username(db, params[:id], params[:username])
 end
 
+# Shows password change form
+#
 get('/settings/:id/change_password') do
   slim(:"/accounts/change_password")
 end
 
+# Changes password
+# @param [Integer] id, user id
+# @param [String] old_pwd, user's old password
+# @param [String] pwd, user's new password
+# @param [String] pwd_again, password input again
+#
+# @See Model#post_settings_change_password
+# @See Model#connect_db
 post('/settings/:id/post-change_password') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -287,10 +400,19 @@ post('/settings/:id/post-change_password') do
   post_settings_change_password(db, id, pwd, old_pwd, pwd_again)
 end
 
+# Shows delete account form
+#
 get('/settings/:id/delete_account') do
   slim(:"/accounts/delete_account")
 end
 
+# Deletes account from settings
+# @param [Integer] id, user id
+# @param [String] username, username
+# @param [String] password, password
+# 
+# @See Model#post_settings_delete_account
+# @See Model#connect_db
 post('/settings/:id/post-delete_account') do
   id = params[:id]
   db = connect_db("db/user_info.db")
@@ -300,6 +422,11 @@ post('/settings/:id/post-delete_account') do
   post_settings_delete_account(db, id, username, password)
 end
 
+# Deletes account from admin
+# @param [Integer] id, user id
+#
+# @See Model#post_admin_delete_account
+# @See Model#connect_db
 post('/admin/:id/post-delete_account') do
   id = params[:id]
   db = connect_db("db/user_info.db")
@@ -307,6 +434,13 @@ post('/admin/:id/post-delete_account') do
   post_admin_delete_account(db, id)
 end
 
+# Shows search form
+# @param [Integer] key1, id for keyword 1
+# @param [Integer] key2, id for keyword 2
+# @param [Integer] key3, id for keyword 3
+#
+# @See Model#keyid_array_to_title_array
+# @See Model#connect_db
 get('/home/search/:key1/:key2/:key3') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
@@ -320,6 +454,13 @@ get('/home/search/:key1/:key2/:key3') do
   slim(:"/site/search")
 end
 
+# Searches for posts with keywords
+# @param [String] keyword, keyword 1
+# @param [String] keyword2, keyword 2
+# @param [String] keyword3, keyword 3
+#
+# @See Model#post_search
+# @See Model#connect_db
 post('/post-search') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
@@ -329,6 +470,8 @@ post('/post-search') do
   post_search(db, keyword1, keyword2, keyword3)
 end
 
+# Logs out user
+# 
 post('/post-logout') do
   session[:username] = nil
   session[:tag] = nil
