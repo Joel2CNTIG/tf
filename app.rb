@@ -159,6 +159,17 @@ post('/post-create') do
   post_create(db, id, title, description, price, keyword1, keyword2, keyword3)
 end
 
+# Runs before viewing a project, makes sure the project exists
+# @param [Integer] id, the id associated with the post
+before('/project/:id') do
+  db = connect_db("db/user_info.db")
+  db.results_as_hash = true
+  id = db.execute("SELECT id FROM projects WHERE id = ?", params[:id])
+  if id == []
+    redirect('/home')
+  end
+end
+
 # Displays a post aswell as a CRUD interface if the user has the necessary permissions
 # @param [Integer] id, the id associated with the post
 #
