@@ -4,8 +4,6 @@ require 'slim'
 require 'sqlite3'
 require 'bcrypt'
 
-enable :sessions 
-
 module Model
 
   # Calculates the average of all integers in an array
@@ -317,9 +315,6 @@ module Model
       end
       db.execute("DELETE FROM user WHERE id = ?", id)
       return true
-      redirect('/')
-    else
-      redirect("settings/#{id}/delete_account")
     end
     return false
   end

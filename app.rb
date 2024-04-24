@@ -150,7 +150,7 @@ get('/account/:id') do
   @db.results_as_hash = true
   @username = @db.execute("SELECT username FROM user WHERE id = ?", @id).first["username"]
   @result = @db.execute("SELECT title FROM projects WHERE user_id = ? ORDER BY id DESC", @id)
-  slim(:"site/account")
+  slim(:"accounts/show")
 end
 
 # Create interface
@@ -160,7 +160,7 @@ get('/create') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   @result = db.execute("SELECT word FROM keywords")
-  slim(:"site/create")
+  slim(:"posts/create")
 end
 
 # Creates post and adds to database
@@ -206,7 +206,7 @@ get('/project/:id') do
   keyword_ids.each do |keyid|
     @keywords << @db.execute("SELECT word FROM keywords WHERE id = ?", keyid["keyword_id"]).first["word"]
   end
-  slim(:"site/project")
+  slim(:"posts/project")
 end
 
 # Runs before showing a project edit-page, makes sure user has necessary permissions
@@ -234,7 +234,7 @@ get('/project/:id/edit') do
   @db = connect_db("db/user_info.db")
   @db.results_as_hash = true
   @result = @db.execute("SELECT word FROM keywords")
-  slim(:"site/edit")
+  slim(:"posts/edit")
 end
 
 # Edits the post
@@ -265,7 +265,7 @@ end
 # @param [Integer] id, id of post
 #
 # @See Model#connect_db
-['/project/:id/delete', '/project/:id/post-delete_post'].each do |path|
+['/project/:id/delete', '/project/:id/post-delete'].each do |path|
   before(path) do
     db = connect_db("db/user_info.db")
     db.results_as_hash = true
@@ -279,14 +279,14 @@ end
 # Shows a project delete form
 # @param [Integer] id, id of project
 get('/project/:id/delete') do
-  slim(:"/site/delete")
+  slim(:"/posts/delete")
 end
 
 # Deletes a project
 # @param [Integer] id, id of project
 # 
 # @See Model#connect_db
-post('/project/:id/post-delete_post') do
+post('/project/:id/post-delete') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   db.execute("DELETE FROM projects WHERE id = ?", params[:id])
@@ -297,7 +297,7 @@ end
 # Displays a basic admin menu
 #
 get('/admin') do
-  slim(:"admin/admin")
+  slim(:"admin/show")
 end
 
 # Displays a keyword creation form
@@ -380,7 +380,7 @@ get('/settings/:id/edit_username') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   @username = db.execute("SELECT username FROM user WHERE id = ?", params[:id]).first["username"]
-  slim(:"accounts/edit_username")
+  slim(:"accounts/edit/username")
 end
 
 # Changes username
@@ -403,7 +403,7 @@ end
 # Shows password change form
 #
 get('/settings/:id/edit_password') do
-  slim(:"/accounts/edit_password")
+  slim(:"/accounts/edit/password")
 end
 
 # Changes password
@@ -432,7 +432,7 @@ end
 # Shows delete account form
 #
 get('/settings/:id/delete_account') do
-  slim(:"/accounts/delete_account")
+  slim(:"/accounts/delete")
 end
 
 # Deletes account from settings
@@ -450,7 +450,10 @@ post('/settings/:id/post-delete_account') do
   password = params[:pwd]
   if post_settings_delete_account(db, id, username, password, session[:tag])
     session.clear
+    redirect('/')
   end
+  redirect("settings/#{id}/delete_account")
+
 end
 
 # Deletes account from admin
