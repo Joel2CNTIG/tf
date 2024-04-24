@@ -127,7 +127,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#before_all-instance_method" title="#before_all (instance method)">#<strong>before_all</strong>(db)  &#x21d2; nil </a>
+      <a href="#before_all-instance_method" title="#before_all (instance method)">#<strong>before_all</strong>(db, cooldown, time1, id, tag, time_arr, status, username, password)  &#x21d2; Array </a>
     
 
     
@@ -223,7 +223,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_create-instance_method" title="#post_create (instance method)">#<strong>post_create</strong>(db, id, title, description, price, keyword, keyword2, keyword3)  &#x21d2; nil </a>
+      <a href="#post_create-instance_method" title="#post_create (instance method)">#<strong>post_create</strong>(db, id, title, description, price, keyword, keyword2, keyword3)  &#x21d2; Arr </a>
     
 
     
@@ -271,7 +271,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_login-instance_method" title="#post_login (instance method)">#<strong>post_login</strong>(db, username, password)  &#x21d2; nil </a>
+      <a href="#post_login-instance_method" title="#post_login (instance method)">#<strong>post_login</strong>(db, username, password, time_arr)  &#x21d2; Array </a>
     
 
     
@@ -295,7 +295,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_register-instance_method" title="#post_register (instance method)">#<strong>post_register</strong>(db, username, password, password_again)  &#x21d2; nil </a>
+      <a href="#post_register-instance_method" title="#post_register (instance method)">#<strong>post_register</strong>(db, username, password, password_again)  &#x21d2; Array </a>
     
 
     
@@ -343,7 +343,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_settings_change_password-instance_method" title="#post_settings_change_password (instance method)">#<strong>post_settings_change_password</strong>(db, id, pwd, old_pwd, pwd_again)  &#x21d2; nil </a>
+      <a href="#post_settings_change_password-instance_method" title="#post_settings_change_password (instance method)">#<strong>post_settings_change_password</strong>(db, id, pwd, old_pwd, pwd_again)  &#x21d2; Array </a>
     
 
     
@@ -367,7 +367,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_settings_change_username-instance_method" title="#post_settings_change_username (instance method)">#<strong>post_settings_change_username</strong>(db, id, username)  &#x21d2; nil </a>
+      <a href="#post_settings_change_username-instance_method" title="#post_settings_change_username (instance method)">#<strong>post_settings_change_username</strong>(db, id, username, tag)  &#x21d2; Array </a>
     
 
     
@@ -391,7 +391,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_settings_delete_account-instance_method" title="#post_settings_delete_account (instance method)">#<strong>post_settings_delete_account</strong>(db, id, username, password)  &#x21d2; nil </a>
+      <a href="#post_settings_delete_account-instance_method" title="#post_settings_delete_account (instance method)">#<strong>post_settings_delete_account</strong>(db, id, username, password, tag)  &#x21d2; Boolean </a>
     
 
     
@@ -415,7 +415,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#timeout-instance_method" title="#timeout (instance method)">#<strong>timeout</strong>(time_arr)  &#x21d2; nil </a>
+      <a href="#timeout-instance_method" title="#timeout (instance method)">#<strong>timeout</strong>(time_arr)  &#x21d2; Array </a>
     
 
     
@@ -509,7 +509,7 @@
       <div class="method_details ">
   <h3 class="signature " id="before_all-instance_method">
   
-    #<strong>before_all</strong>(db)  &#x21d2; <tt>nil</tt> 
+    #<strong>before_all</strong>(db, cooldown, time1, id, tag, time_arr, status, username, password)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -531,13 +531,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Array</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters session when conditions are met</p>
+<p>Array of data for app to process into sessions</p>
 </div>
       
     </li>
@@ -552,15 +552,6 @@
       <pre class="lines">
 
 
-58
-59
-60
-61
-62
-63
-64
-65
-66
 67
 68
 69
@@ -592,51 +583,60 @@
 95
 96
 97
-98</pre>
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 67</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_before_all'>before_all</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:cooldown</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='kw'>true</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time2</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time2</span><span class='rbracket'>]</span> <span class='op'>-</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time1</span><span class='rbracket'>]</span> <span class='op'>&gt;</span> <span class='int'>5</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:cooldown</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>false</span> 
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time1</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time2</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time_arr</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_before_all'>before_all</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_cooldown'>cooldown</span><span class='comma'>,</span> <span class='id identifier rubyid_time1'>time1</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_tag'>tag</span><span class='comma'>,</span> <span class='id identifier rubyid_time_arr'>time_arr</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_cooldown'>cooldown</span> <span class='op'>==</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_time2'>time2</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_time2'>time2</span> <span class='op'>-</span> <span class='id identifier rubyid_time1'>time1</span> <span class='op'>&gt;</span> <span class='int'>5</span>
+      <span class='id identifier rubyid_cooldown'>cooldown</span> <span class='op'>=</span> <span class='kw'>false</span> 
+      <span class='id identifier rubyid_time1'>time1</span> <span class='op'>=</span> <span class='kw'>nil</span>
+      <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='kw'>nil</span>
+      <span class='id identifier rubyid_time_arr'>time_arr</span> <span class='op'>=</span> <span class='kw'>nil</span>
     <span class='kw'>else</span>
       <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/cooldown</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/../cooldown</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+        <span class='kw'>return</span> <span class='lbracket'>[</span><span class='id identifier rubyid_cooldown'>cooldown</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='id identifier rubyid_time_arr'>time_arr</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/../cooldown</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_restricted_routes'>restricted_routes</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/create</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_login_routes'>login_routes</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/login</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/post-login</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/post-register</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/post-guest</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/wrong_username_or_pwd</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/username_too_long</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/username_already_exists</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/post-too_long</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/cooldown</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='kw'>nil</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_login_routes'>login_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>guest</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span> 
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_id'>id</span> <span class='op'>==</span> <span class='kw'>nil</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_login_routes'>login_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>guest</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_username'>username</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_password'>password</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='kw'>nil</span> 
+    <span class='id identifier rubyid_redirect'>redirect</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_login_routes'>login_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>guest</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT username FROM user WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>username</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span> 
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_login_routes'>login_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>guest</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>!=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT username FROM user WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>username</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_username'>username</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_password'>password</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='kw'>nil</span> 
+    <span class='id identifier rubyid_redirect'>redirect</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>guest</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_restricted_routes'>restricted_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>guest</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_restricted_routes'>restricted_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_redirect'>redirect</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/admin</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/admin</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_redirect'>redirect</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='kw'>nil</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_login_routes'>login_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>==</span> <span class='kw'>nil</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_login_routes'>login_routes</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_path_info'>path_info</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_redirect'>redirect</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span>
   <span class='kw'>end</span>
+  <span class='kw'>return</span><span class='lbracket'>[</span><span class='id identifier rubyid_cooldown'>cooldown</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='id identifier rubyid_time_arr'>time_arr</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_redirect'>redirect</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -689,12 +689,12 @@
       <pre class="lines">
 
 
-49
 50
-51</pre>
+51
+52</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 49</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 50</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_connect_db'>connect_db</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='const'>SQLite3</span><span class='op'>::</span><span class='const'>Database</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
@@ -750,22 +750,22 @@
       <pre class="lines">
 
 
+352
+353
+354
+355
+356
+357
 358
 359
 360
 361
 362
 363
-364
-365
-366
-367
-368
-369
-370</pre>
+364</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 358</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 352</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_keyid_array_to_title_array'>keyid_array_to_title_array</span><span class='lparen'>(</span><span class='id identifier rubyid_arr'>arr</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_projid_array'>projid_array</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -816,7 +816,7 @@
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>No return, redirects and alters database when conditions are met</p>
 </div>
       
     </li>
@@ -831,22 +831,22 @@
       <pre class="lines">
 
 
+333
+334
+335
+336
+337
+338
 339
 340
 341
 342
 343
 344
-345
-346
-347
-348
-349
-350
-351</pre>
+345</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 339</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 333</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_post_admin_delete_account'>post_admin_delete_account</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_id'>id</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>1</span><span class='tstring_end'>&quot;</span></span>
@@ -869,7 +869,7 @@
       <div class="method_details ">
   <h3 class="signature " id="post_create-instance_method">
   
-    #<strong>post_create</strong>(db, id, title, description, price, keyword, keyword2, keyword3)  &#x21d2; <tt>nil</tt> 
+    #<strong>post_create</strong>(db, id, title, description, price, keyword, keyword2, keyword3)  &#x21d2; <tt>Arr</tt> 
   
 
   
@@ -891,13 +891,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Arr</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>Array of status and redirect</p>
 </div>
       
     </li>
@@ -912,7 +912,6 @@
       <pre class="lines">
 
 
-189
 190
 191
 192
@@ -934,16 +933,14 @@
 208
 209
 210
-211
-212</pre>
+211</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 189</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 190</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_post_create'>post_create</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='id identifier rubyid_description'>description</span><span class='comma'>,</span> <span class='id identifier rubyid_price'>price</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword'>keyword</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword2'>keyword2</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword3'>keyword3</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_title'>title</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='op'>||</span> <span class='id identifier rubyid_description'>description</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='op'>||</span> <span class='id identifier rubyid_price'>price</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>create_error</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/create</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>create_error</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/create</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_keywords'>keywords</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='kw'>unless</span> <span class='id identifier rubyid_keyword'>keyword</span> <span class='op'>==</span> <span class='kw'>nil</span> <span class='op'>||</span> <span class='id identifier rubyid_keyword'>keyword</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
@@ -961,8 +958,7 @@
     <span class='id identifier rubyid_key_id'>key_id</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id FROM keywords WHERE word = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_word'>word</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
     <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>INSERT INTO project_keyword_relationship (project_id, keyword_id) VALUES (?,?)</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_proj_id'>proj_id</span><span class='comma'>,</span> <span class='id identifier rubyid_key_id'>key_id</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
-  <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-  <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1000,7 +996,7 @@
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>No return, redirects and alters database when conditions are met</p>
 </div>
       
     </li>
@@ -1015,6 +1011,7 @@
       <pre class="lines">
 
 
+225
 226
 227
 228
@@ -1039,11 +1036,10 @@
 247
 248
 249
-250
-251</pre>
+250</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 226</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 225</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_post_edit'>post_edit</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='id identifier rubyid_description'>description</span><span class='comma'>,</span> <span class='id identifier rubyid_price'>price</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword1'>keyword1</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword2'>keyword2</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword3'>keyword3</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_keywords'>keywords</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1079,7 +1075,7 @@
       <div class="method_details ">
   <h3 class="signature " id="post_login-instance_method">
   
-    #<strong>post_login</strong>(db, username, password)  &#x21d2; <tt>nil</tt> 
+    #<strong>post_login</strong>(db, username, password, time_arr)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -1101,13 +1097,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Array</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>Array of login data</p>
 </div>
       
     </li>
@@ -1122,16 +1118,6 @@
       <pre class="lines">
 
 
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
 118
 119
 120
@@ -1140,28 +1126,36 @@
 123
 124
 125
-126</pre>
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 108</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 118</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_post_login'>post_login</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time_arr</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
-  <span class='id identifier rubyid_timeout'><span class='object_link'><a href="#timeout-instance_method" title="Model#timeout (method)">timeout</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time_arr</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_post_login'>post_login</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_time_arr'>time_arr</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_time_arr'>time_arr</span> <span class='op'>&lt;&lt;</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
+  <span class='id identifier rubyid_timeout'><span class='object_link'><a href="#timeout-instance_method" title="Model#timeout (method)">timeout</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_timeout'><span class='object_link'><a href="#timeout-instance_method" title="Model#timeout (method)">timeout</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_time_arr'>time_arr</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_timeout'><span class='object_link'><a href="#timeout-instance_method" title="Model#timeout (method)">timeout</a></span></span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toofast</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_timeout'><span class='object_link'><a href="#timeout-instance_method" title="Model#timeout (method)">timeout</a></span></span>
+  <span class='kw'>end</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT password FROM user WHERE username = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span> <span class='op'>!=</span> <span class='kw'>nil</span> <span class='op'>&amp;&amp;</span> <span class='const'>BCrypt</span><span class='op'>::</span><span class='const'>Password</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>password</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='id identifier rubyid_password'>password</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_username'>username</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_password'>password</span>
+    <span class='id identifier rubyid_id'>id</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id FROM user WHERE username = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span> 
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rbracket'>]</span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id FROM user WHERE username = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>wrong_user_or_pwd</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/login</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>wrong_user_or_pwd</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1172,7 +1166,7 @@
       <div class="method_details ">
   <h3 class="signature " id="post_register-instance_method">
   
-    #<strong>post_register</strong>(db, username, password, password_again)  &#x21d2; <tt>nil</tt> 
+    #<strong>post_register</strong>(db, username, password, password_again)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -1194,13 +1188,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Array</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>Array of register data</p>
 </div>
       
     </li>
@@ -1215,15 +1209,6 @@
       <pre class="lines">
 
 
-136
-137
-138
-139
-140
-141
-142
-143
-144
 145
 146
 147
@@ -1254,49 +1239,42 @@
 172
 173
 174
-175</pre>
+175
+176</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 136</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 145</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_post_register'>post_register</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_password_again'>password_again</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_compared_username'>compared_username</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT username FROM user WHERE username LIKE ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
   <span class='id identifier rubyid_password_digest'>password_digest</span> <span class='op'>=</span> <span class='const'>BCrypt</span><span class='op'>::</span><span class='const'>Password</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&gt;</span> <span class='int'>20</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toolong</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toolong</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='op'>||</span> <span class='id identifier rubyid_password'>password</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> 
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>emptyfields</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>emptyfields</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_forbidden_chars'>forbidden_chars</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>!</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&amp;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>=</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>%</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>¤</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>$</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>£</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>@</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ä</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>å</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ö</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>|</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&lt;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_forbidden_chars'>forbidden_chars</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_char'>char</span><span class='op'>|</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_char'>char</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>forbiddenchar</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>forbiddenchar</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_password_again'>password_again</span> <span class='op'>==</span> <span class='id identifier rubyid_password'>password</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_compared_username'>compared_username</span> <span class='op'>==</span> <span class='kw'>nil</span> 
       <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>INSERT INTO user (username, password) VALUES (?,?)</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password_digest'>password_digest</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_username'>username</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_password'>password</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
       <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span> 
-        <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span>
       <span class='kw'>else</span>
-        <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user</span><span class='tstring_end'>&quot;</span></span>
       <span class='kw'>end</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id FROM user WHERE username = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_id'>id</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id FROM user WHERE username = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span><span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/home</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_tag'>tag</span><span class='rbracket'>]</span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>alreadyexists</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>alreadyexists</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nomatch</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nomatch</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1335,7 +1313,7 @@
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>No return, redirects when conditions are met</p>
 </div>
       
     </li>
@@ -1350,6 +1328,12 @@
       <pre class="lines">
 
 
+374
+375
+376
+377
+378
+379
 380
 381
 382
@@ -1361,16 +1345,10 @@
 388
 389
 390
-391
-392
-393
-394
-395
-396
-397</pre>
+391</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 380</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 374</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_post_search'>post_search</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword1'>keyword1</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword2'>keyword2</span><span class='comma'>,</span> <span class='id identifier rubyid_keyword3'>keyword3</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_keyword1'>keyword1</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
@@ -1398,7 +1376,7 @@
       <div class="method_details ">
   <h3 class="signature " id="post_settings_change_password-instance_method">
   
-    #<strong>post_settings_change_password</strong>(db, id, pwd, old_pwd, pwd_again)  &#x21d2; <tt>nil</tt> 
+    #<strong>post_settings_change_password</strong>(db, id, pwd, old_pwd, pwd_again)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -1420,13 +1398,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Array</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>Array of data</p>
 </div>
       
     </li>
@@ -1441,6 +1419,7 @@
       <pre class="lines">
 
 
+261
 262
 263
 264
@@ -1453,15 +1432,10 @@
 271
 272
 273
-274
-275
-276
-277
-278
-279</pre>
+274</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 262</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 261</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_post_settings_change_password'>post_settings_change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span> <span class='id identifier rubyid_old_pwd'>old_pwd</span><span class='comma'>,</span> <span class='id identifier rubyid_pwd_again'>pwd_again</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_compared_old_pwd'>compared_old_pwd</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT password FROM user WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>password</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1469,16 +1443,12 @@
     <span class='kw'>if</span> <span class='id identifier rubyid_pwd'>pwd</span> <span class='op'>==</span> <span class='id identifier rubyid_pwd_again'>pwd_again</span>
       <span class='id identifier rubyid_password_digest'>password_digest</span> <span class='op'>=</span> <span class='const'>BCrypt</span><span class='op'>::</span><span class='const'>Password</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_pwd'>pwd</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>UPDATE user SET password = ? WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_password_digest'>password_digest</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_pwd'>pwd</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>changedpwd</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>changedpwd</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nomatch</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/change_password</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nomatch</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/change_password</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>wrongpwd</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/change_password</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>wrongpwd</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/change_password</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1489,7 +1459,7 @@
       <div class="method_details ">
   <h3 class="signature " id="post_settings_change_username-instance_method">
   
-    #<strong>post_settings_change_username</strong>(db, id, username)  &#x21d2; <tt>nil</tt> 
+    #<strong>post_settings_change_username</strong>(db, id, username, tag)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -1511,13 +1481,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Array</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>Array of session and redirect info</p>
 </div>
       
     </li>
@@ -1532,6 +1502,10 @@
       <pre class="lines">
 
 
+284
+285
+286
+287
 288
 289
 290
@@ -1541,29 +1515,23 @@
 294
 295
 296
-297
-298
-299
-300
-301
-302</pre>
+297</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 288</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 284</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_post_settings_change_username'>post_settings_change_username</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_post_settings_change_username'>post_settings_change_username</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_tag'>tag</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_all_usernames'>all_usernames</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT username FROM user</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_all_usernames'>all_usernames</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
     <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>username</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>==</span> <span class='id identifier rubyid_name'>name</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>alreadyexists</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/change_username</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>alreadyexists</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/change_username</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
-  <span class='kw'>unless</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span> 
+  <span class='kw'>unless</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span> 
     <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>UPDATE user SET username = ? WHERE id = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_username'>username</span>
   <span class='kw'>end</span>
+  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1574,7 +1542,7 @@
       <div class="method_details ">
   <h3 class="signature " id="post_settings_delete_account-instance_method">
   
-    #<strong>post_settings_delete_account</strong>(db, id, username, password)  &#x21d2; <tt>nil</tt> 
+    #<strong>post_settings_delete_account</strong>(db, id, username, password, tag)  &#x21d2; <tt>Boolean</tt> 
   
 
   
@@ -1596,13 +1564,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Boolean</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, redirects and alters sessions when conditions are met</p>
+<p>to determine whether to clear sessions</p>
 </div>
       
     </li>
@@ -1617,6 +1585,10 @@
       <pre class="lines">
 
 
+308
+309
+310
+311
 312
 313
 314
@@ -1630,21 +1602,15 @@
 322
 323
 324
-325
-326
-327
-328
-329
-330
-331</pre>
+325</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'model.rb', line 312</span>
+      <pre class="code"><span class="info file"># File 'model.rb', line 308</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_post_settings_delete_account'>post_settings_delete_account</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_post_settings_delete_account'>post_settings_delete_account</span><span class='lparen'>(</span><span class='id identifier rubyid_db'>db</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_tag'>tag</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_compared_username'>compared_username</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT username FROM user WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>username</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_compared_password'>compared_password</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT password FROM user WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>password</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>==</span> <span class='id identifier rubyid_compared_username'>compared_username</span> <span class='op'>&amp;&amp;</span> <span class='const'>BCrypt</span><span class='op'>::</span><span class='const'>Password</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_compared_password'>compared_password</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='id identifier rubyid_password'>password</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_username'>username</span> <span class='op'>==</span> <span class='id identifier rubyid_compared_username'>compared_username</span> <span class='op'>&amp;&amp;</span> <span class='const'>BCrypt</span><span class='op'>::</span><span class='const'>Password</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_compared_password'>compared_password</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='id identifier rubyid_password'>password</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_tag'>tag</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_project_ids'>project_ids</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SELECT id FROM projects WHERE user_id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_project_ids'>project_ids</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_projid'>projid</span><span class='op'>|</span>
       <span class='id identifier rubyid_new_project_id'>new_project_id</span> <span class='op'>=</span> <span class='id identifier rubyid_projid'>projid</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1652,14 +1618,12 @@
       <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DELETE FROM project_keyword_relationship WHERE project_id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_new_project_id'>new_project_id</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
     <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DELETE FROM user WHERE id = ?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:username</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='kw'>return</span> <span class='kw'>true</span>
     <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/delete_account</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
+  <span class='kw'>return</span> <span class='kw'>false</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1669,7 +1633,7 @@
       <div class="method_details ">
   <h3 class="signature " id="timeout-instance_method">
   
-    #<strong>timeout</strong>(time_arr)  &#x21d2; <tt>nil</tt> 
+    #<strong>timeout</strong>(time_arr)  &#x21d2; <tt>Array</tt> 
   
 
   
@@ -1691,13 +1655,13 @@
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>Array</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>No return, alters session and redirects user when certain conditions are met</p>
+<p>An array of information gathered from the method</p>
 </div>
       
     </li>
@@ -1728,7 +1692,8 @@
 38
 39
 40
-41</pre>
+41
+42</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'model.rb', line 25</span>
@@ -1743,12 +1708,13 @@
       <span class='id identifier rubyid_time_intervals'>time_intervals</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_new_time'>new_time</span>
     <span class='kw'>end</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_average'><span class='object_link'><a href="#average-instance_method" title="Model#average (method)">average</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_time_intervals'>time_intervals</span><span class='rparen'>)</span> <span class='op'>&lt;=</span> <span class='int'>10</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toofast</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:cooldown</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>true</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:time1</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
-      <span class='id identifier rubyid_redirect'>redirect</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/login</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toofast</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_cooldown'>cooldown</span> <span class='op'>=</span> <span class='kw'>true</span>
+      <span class='id identifier rubyid_time1'>time1</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
+      <span class='id identifier rubyid_redirect'>redirect</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/login</span><span class='tstring_end'>&#39;</span></span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
+  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='id identifier rubyid_cooldown'>cooldown</span><span class='comma'>,</span> <span class='id identifier rubyid_time1'>time1</span><span class='comma'>,</span> <span class='id identifier rubyid_redirect'>redirect</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1760,7 +1726,7 @@
 </div>
 
       <div id="footer">
-  Generated on Wed Apr 10 12:11:29 2024 by
+  Generated on Wed Apr 24 11:28:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.2).
 </div>

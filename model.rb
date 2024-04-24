@@ -63,7 +63,7 @@ module Model
   # @username [String] username
   # @password [String] password
   #
-  # @return [nil] No return, redirects and alters session when conditions are met
+  # @return [Array] Array of data for app to process into sessions
   def before_all(db, cooldown, time1, id, tag, time_arr, status, username, password)
     if cooldown == true
       time2 = Time.now
@@ -114,7 +114,7 @@ module Model
   # @password [String] password
   # @time_arr [Array] array of times, used for cooldown
   #
-  # @return [nil] No return, redirects and alters sessions when conditions are met
+  # @return [Array] Array of login data
   def post_login(db, username, password, time_arr)
     time_arr << Time.now
     timeout = timeout(time_arr)
@@ -257,7 +257,7 @@ module Model
   # @old_pwd [String] old password
   # @pwd_again [String] password input again
   #
-  # @return [nil] No return, redirects and alters sessions when conditions are met
+  # @return [Array] Array of data
   def post_settings_change_password(db, id, pwd, old_pwd, pwd_again)
     compared_old_pwd = db.execute("SELECT password FROM user WHERE id = ?", id).first["password"]
     if BCrypt::Password.new(compared_old_pwd) == old_pwd
@@ -304,7 +304,7 @@ module Model
   # @password [String] password
   # @tag [String] tag for authorization
   #
-  # @return [nil] No return, redirects and alters sessions when conditions are met
+  # @return [Boolean] to determine whether to clear sessions
   def post_settings_delete_account(db, id, username, password, tag)
     compared_username = db.execute("SELECT username FROM user WHERE id = ?", id).first["username"]
     compared_password = db.execute("SELECT password FROM user WHERE id = ?", id).first["password"]
@@ -329,7 +329,7 @@ module Model
   # @db [Database] database
   # @id [Integer] user id
   #
-  # @return [nil] No return, redirects and alters sessions when conditions are met
+  # @return [nil] No return, redirects and alters database when conditions are met
   def post_admin_delete_account(db, id)
     if id == "1"
       redirect('/admin')
@@ -370,7 +370,7 @@ module Model
   # @keyword2 [String] keyword 2
   # @keyword3 [String] keyword 3
   #
-  # @return [nil] No return, redirects and alters sessions when conditions are met
+  # @return [nil] No return, redirects when conditions are met
   def post_search(db, keyword1, keyword2, keyword3)
     if keyword1 == ""
       key1 = "none"
