@@ -1,10 +1,10 @@
 h1 Welcome #{session[:username]}!
 
 -unless session[:tag] == "admin"
-    a href="/settings/#{session[:id]}/change_username"
+    a href="/settings/#{session[:id]}/edit_username"
         h2 Change Username
 
-    a href="/settings/#{session[:id]}/change_password"
+    a href="/settings/#{session[:id]}/edit_password"
         h2 Change password
 
     a href="/settings/#{session[:id]}/delete_account"

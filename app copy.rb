@@ -18,15 +18,7 @@ before do
   end
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  before = before_all(db, session[:timeout], session[:time1], session[:id], session[:tag], session[:time_arr], session[:status], session[:username], session[:password])
-  session[:cooldown] = before[0]
-  session[:status] = before[1]
-  session[:time_arr] = before[2]
-  session[:username] = before[3]
-  session[:password] = before[4]
-  unless before[5] == nil
-    redirect(before[5])
-  end
+  before_all(db)
 end
 
 # Displays a register form
@@ -62,22 +54,7 @@ post('/post-login') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
   result = db.execute("SELECT password FROM user WHERE username = ?",username).first
-  returned_data = post_login(db, username, password, session[:time_arr])
-  if returned_data[0] == "toofast"
-    session[:status] = returned_data[0]
-    session[:cooldown] = returned_data[1]
-    session[:time1] = returned_data[2]
-    redirect(returned_data[3])
-  elsif returned_data[0] == "admin" || returned_data[0] == "user"
-    session[:tag] = returned_data[0]
-    session[:id] = returned_data[1]
-    session[:username] = username
-    session[:password] = password
-    redirect('/home')
-  else
-    session[:status] = returned_data[0]
-    redirect('/login')
-  end
+  post_login(db, username, password)
 end
   
 # Attemps to register user
@@ -93,13 +70,7 @@ post('/post-register') do
   password_again = params[:pwd_again]
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  register = post_register(db, username, password, password_again)
-  session[:status] = register[0]
-  session[:username] = register[2]
-  session[:password] = register[3]
-  session[:id] = register[4]
-  session[:tag] = register[5]
-  redirect(register[1])
+  post_register(db, username, password, password_again)
 end
 
 # Logs in as guest
@@ -183,10 +154,7 @@ post('/post-create') do
   keyword1 = params[:keyword]
   keyword2 = params[:keyword2]
   keyword3 = params[:keyword3]
-  create = post_create(db, id, title, description, price, keyword1, keyword2, keyword3)
-  session[:status] = create[0]
-  redirect(create[1])
-
+  post_create(db, id, title, description, price, keyword1, keyword2, keyword3)
 end
 
 # Displays a post aswell as a CRUD interface if the user has the necessary permissions
@@ -392,12 +360,7 @@ end
 post('/settings/:id/post-edit_username') do
   db = connect_db("db/user_info.db")
   db.results_as_hash = true
-  info = post_settings_change_username(db, params[:id], params[:username], session[:tag])
-  session[:status] = info[0]
-  unless info[2] == nil
-    session[:username] = info[2]
-  end
-  redirect(info[1])
+  post_settings_change_username(db, params[:id], params[:username])
 end
 
 # Shows password change form
@@ -421,12 +384,7 @@ post('/settings/:id/post-edit_password') do
   old_pwd = params[:old_pwd]
   pwd = params[:pwd]
   pwd_again = params[:pwd_again]
-  info = post_settings_change_password(db, id, pwd, old_pwd, pwd_again)
-  session[:status] = info[0]
-  unless info[1] == nil
-    session[:password] = info[1]
-  end
-  redirect(info[2])
+  post_settings_change_password(db, id, pwd, old_pwd, pwd_again)
 end
 
 # Shows delete account form
@@ -448,9 +406,7 @@ post('/settings/:id/post-delete_account') do
   db.results_as_hash = true
   username = params[:username]
   password = params[:pwd]
-  if post_settings_delete_account(db, id, username, password, session[:tag])
-    session.clear
-  end
+  post_settings_delete_account(db, id, username, password)
 end
 
 # Deletes account from admin

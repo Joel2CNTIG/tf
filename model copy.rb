@@ -21,7 +21,7 @@ module Model
   #
   # @time_arr [Array] array of times
   #
-  # @return [Array] An array of information gathered from the method
+  # @return [nil] No return, alters session and redirects user when certain conditions are met
   def timeout(time_arr)
     time_arr = time_arr.last(5)
     if time_arr.length == 5
@@ -32,13 +32,12 @@ module Model
         time_intervals << new_time
       end
       if average(time_intervals) <= 10
-        status = "toofast"
-        cooldown = true
-        time1 = Time.now
-        redirect = '/login'
+        session[:status] = "toofast"
+        session[:cooldown] = true
+        session[:time1] = Time.now
+        redirect('/login')
       end
     end
-    return [status, cooldown, time1, redirect]
   end
 
   # Creates database based on given path
@@ -54,56 +53,48 @@ module Model
   # Checks permissions for entering routes
   #
   # @db [Database] database
-  # @cooldown [Boolean] signifies whether site is under cooldown
-  # @time1 [Time] time when cooldown occured
-  # @id [Integer] user id
-  # @tag [String] tag to signify user authority
-  # @time_arr [Array] array of times for cooldown
-  # @status [String] user to signify errors
-  # @username [String] username
-  # @password [String] password
   #
   # @return [nil] No return, redirects and alters session when conditions are met
-  def before_all(db, cooldown, time1, id, tag, time_arr, status, username, password)
-    if cooldown == true
-      time2 = Time.now
-      if time2 - time1 > 5
-        cooldown = false 
-        time1 = nil
-        status = nil
-        time_arr = nil
+  def before_all(db)
+    if session[:cooldown] == true
+      session[:time2] = Time.now
+      if session[:time2] - session[:time1] > 5
+        session[:cooldown] = false 
+        session[:time1] = nil
+        session[:time2] = nil
+        session[:status] = nil
+        session[:time_arr] = nil
       else
         unless request.path_info.include?('/cooldown')
-          return [cooldown, status, time_arr, username, password, "/../cooldown"]
+          redirect('/../cooldown')
         end
       end
     end
     restricted_routes = ['/create']
     login_routes = ['/', '/login', '/post-login', '/post-register', '/post-guest', '/wrong_username_or_pwd', '/username_too_long', '/username_already_exists', '/post-too_long', '/cooldown']
-    if id == nil && !login_routes.include?(request.path_info) && tag != "guest"
-      tag = nil
-      username = nil
-      password = nil
-      status = nil 
-      redirect = '/'
+    if session[:id] == nil && !login_routes.include?(request.path_info) && session[:tag] != "guest"
+      session[:tag] = nil
+      session[:username] = nil
+      session[:password] = nil
+      session[:status] = nil 
+      redirect('/')
     end
-    if !login_routes.include?(request.path_info) && tag != "guest" && username != db.execute("SELECT username FROM user WHERE id = ?", id).first["username"]
-      tag = nil
-      username = nil
-      password = nil
-      status = nil 
-      redirect = '/'
+    if !login_routes.include?(request.path_info) && session[:tag] != "guest" && session[:username] != db.execute("SELECT username FROM user WHERE id = ?", session[:id]).first["username"]
+      session[:tag] = nil
+      session[:username] = nil
+      session[:password] = nil
+      session[:status] = nil 
+      redirect('/')
     end
-    if tag == "guest" && restricted_routes.include?(request.path_info)
-      redirect = '/home'
+    if session[:tag] == "guest" && restricted_routes.include?(request.path_info)
+      redirect('/home')
     end
-    if tag != "admin" && request.path_info.include?('/admin')
-      redirect = '/home'
+    if session[:tag] != "admin" && request.path_info.include?('/admin')
+      redirect('/home')
     end
-    if tag == nil && !login_routes.include?(request.path_info)
-      redirect = '/'
+    if session[:tag] == nil && !login_routes.include?(request.path_info)
+      redirect('/')
     end
-    return[cooldown, status, time_arr, username, password, redirect]
   end
 
   # Attemps to log in user
@@ -112,25 +103,25 @@ module Model
   # @db [Database] database
   # @username [String] username
   # @password [String] password
-  # @time_arr [Array] array of times, used for cooldown
   #
   # @return [nil] No return, redirects and alters sessions when conditions are met
-  def post_login(db, username, password, time_arr)
-    time_arr << Time.now
-    timeout = timeout(time_arr)
-    if timeout[0] == "toofast"
-      return timeout
-    end
+  def post_login(db, username, password)
+    session[:time_arr] << Time.now
+    timeout(session[:time_arr])
     result = db.execute("SELECT password FROM user WHERE username = ?",username).first
     if result != nil && BCrypt::Password.new(result["password"]) == password
-      id = db.execute("SELECT id FROM user WHERE username = ?",username).first["id"]
+      session[:username] = username
+      session[:password] = password
       if username == "admin" 
-        return ["admin", id]
+        session[:tag] = "admin"
       else
-        return ["user", id]
+        session[:tag] = "user"
       end
+      session[:id] = db.execute("SELECT id FROM user WHERE username = ?",username).first["id"]
+      redirect('/home')
     else
-      return ["wrong_user_or_pwd"]
+      session[:status] = "wrong_user_or_pwd"
+      redirect('/login')
     end
   end
     
@@ -141,37 +132,45 @@ module Model
   # @password [String] password
   # @password_again [String] password_again
   #
-  # @return [Array] Array of register data
+  # @return [nil] No return, redirects and alters sessions when conditions are met
   def post_register(db, username, password, password_again)
     compared_username = db.execute("SELECT username FROM user WHERE username LIKE ?",username).first
     password_digest = BCrypt::Password.create(password)
     if username.length > 20
-      return ["toolong", '/', nil, nil, nil, nil]
+      session[:status] = "toolong"
+      redirect('/')
     end
     if username == "" || password == "" 
-      return ["emptyfields", '/', nil, nil, nil, nil]
+      session[:status] = "emptyfields"
+      redirect('/')
     end
     forbidden_chars = [" ", ",", ":", ";", "?", "!", "]", "[", "&", "=", "}", "{", "%", "¤", "$", "#", "£", "'", "@", "ä", "å", "ö", "|", "<", ">"]
     forbidden_chars.each do |char|
       if username.include?(char)
-        return ["forbiddenchar", '/', nil, nil, nil, nil]
+        session[:status] = "forbiddenchar"
+        redirect('/')
       end
     end
     if password_again == password
       if compared_username == nil 
         db.execute("INSERT INTO user (username, password) VALUES (?,?)",username, password_digest)
+        session[:username] = username
+        session[:password] = password
+        session[:status] = nil
         if username == "admin" 
-          tag = "admin"
+          session[:tag] = "admin"
         else
-          tag = "user"
+          session[:tag] = "user"
         end
-        id = db.execute("SELECT id FROM user WHERE username = ?",username).first["id"]
-        return [nil, '/home', username, password, id, tag]
+        session[:id] = db.execute("SELECT id FROM user WHERE username = ?",username).first["id"]
+        redirect('/home')
       else
-        return ["alreadyexists", '/', nil, nil, nil, nil]
+        session[:status] = "alreadyexists"
+        redirect('/')
       end
     else
-      return ["nomatch", '/', nil, nil, nil, nil]
+      session[:status] = "nomatch"
+      redirect('/')
     end
   end
 
@@ -186,10 +185,11 @@ module Model
   # @keyword2 [String] keyword 2
   # @keyword2 [String] keyword 3
   #
-  # @return [Arr] Array of status and redirect
+  # @return [nil] No return, redirects and alters sessions when conditions are met
   def post_create(db, id, title, description, price, keyword, keyword2, keyword3)
     if title == "" || description == "" || price == ""
-      return ["create_error", '/create']
+      session[:status] = "create_error"
+      redirect('/create')
     end
     keywords = []
     unless keyword == nil || keyword == ""
@@ -207,7 +207,8 @@ module Model
       key_id = db.execute("SELECT id FROM keywords WHERE word = ?", word).first["id"]
       db.execute("INSERT INTO project_keyword_relationship (project_id, keyword_id) VALUES (?,?)", proj_id, key_id)
     end
-    return [nil, '/home']
+    session[:status] = nil
+    redirect('/home')
   end
 
   # Attempts to edit post
@@ -221,7 +222,7 @@ module Model
   # @keyword2 [String] keyword 2
   # @keyword2 [String] keyword 3
   #
-  # @return [nil] No return, redirects and alters database when conditions are met
+  # @return [nil] No return, redirects and alters sessions when conditions are met
   def post_edit(db, id, title, description, price, keyword1, keyword2, keyword3)
     keywords = []
     unless keyword1 == nil || keyword1 == ""
@@ -264,12 +265,16 @@ module Model
       if pwd == pwd_again
         password_digest = BCrypt::Password.create(pwd)
         db.execute("UPDATE user SET password = ? WHERE id = ?", password_digest, id)
-        return ["changedpwd", pwd, "settings/#{id}"]
+        session[:password] = pwd
+        session[:status] = "changedpwd"
+        redirect("/settings/#{id}")
       else
-        return ["nomatch", nil, "/settings/#{id}/change_password"]
+        session[:status] = "nomatch"
+        redirect("/settings/#{id}/change_password")
       end
     else
-      return ["wrongpwd", nil, "/settings/#{id}/change_password"]
+      session[:status] = "wrongpwd"
+      redirect("/settings/#{id}/change_password")
     end
   end
 
@@ -278,21 +283,21 @@ module Model
   # @db [Database] database
   # @id [Integer] user id
   # @username [String] username
-  # @tag [String] tag for authorization
   # 
-  # @return [Array] Array of session and redirect info
-  def post_settings_change_username(db, id, username, tag)
+  # @return [nil] No return, redirects and alters sessions when conditions are met
+  def post_settings_change_username(db, id, username)
     all_usernames = db.execute("SELECT username FROM user")
     all_usernames.each do |name|
       name = name["username"]
       if username == name
-        return ["alreadyexists", "/settings/#{id}/change_username", nil]
+        session[:status] = "alreadyexists"
+        redirect("/settings/#{id}/change_username")
       end
     end
-    unless tag == "admin" 
+    unless session[:tag] == "admin" 
       db.execute("UPDATE user SET username = ? WHERE id = #{id}", username)
+      session[:username] = username
     end
-    return [nil, "settings/#{id}", username]
     redirect("/settings/#{id}")
   end
 
@@ -302,13 +307,12 @@ module Model
   # @id [Integer] user id
   # @username [String] username
   # @password [String] password
-  # @tag [String] tag for authorization
   #
   # @return [nil] No return, redirects and alters sessions when conditions are met
-  def post_settings_delete_account(db, id, username, password, tag)
+  def post_settings_delete_account(db, id, username, password)
     compared_username = db.execute("SELECT username FROM user WHERE id = ?", id).first["username"]
     compared_password = db.execute("SELECT password FROM user WHERE id = ?", id).first["password"]
-    if username == compared_username && BCrypt::Password.new(compared_password) == password && tag != "admin"
+    if username == compared_username && BCrypt::Password.new(compared_password) == password && session[:tag] != "admin"
       project_ids = db.execute("SELECT id FROM projects WHERE user_id = ?", id)
       project_ids.each do |projid|
         new_project_id = projid["id"]
@@ -316,12 +320,14 @@ module Model
         db.execute("DELETE FROM project_keyword_relationship WHERE project_id = ?", new_project_id)
       end
       db.execute("DELETE FROM user WHERE id = ?", id)
-      return true
+      session[:username] = nil
+      session[:password] = nil
+      session[:tag] = nil
+      session[:status] = nil
       redirect('/')
     else
       redirect("settings/#{id}/delete_account")
     end
-    return false
   end
 
   # Attempts to delete account (settings)
